@@ -1,0 +1,86 @@
+/* Custom Calendar Styles */
+.fc {
+    font-family: var(--font-sans, 'Instrument Sans', ui-sans-serif, system-ui, sans-serif);
+}
+
+.fc-toolbar {
+    margin-bottom: 1rem !important;
+}
+
+.fc-toolbar-title {
+    font-size: 1.25rem !important;
+    font-weight: 600 !important;
+    color: var(--text-primary, #1f2937) !important;
+}
+
+.fc-button {
+    background: white !important;
+    border: 1px solid var(--border-light, #e5e7eb) !important;
+    color: var(--text-secondary, #6b7280) !important;
+    font-weight: 500 !important;
+    padding: 0.375rem 0.75rem !important;
+    border-radius: 0.375rem !important;
+    font-size: 0.875rem !important;
+}
+
+.fc-button:hover {
+    background: var(--bg-secondary, #f9fafb) !important;
+    border-color: var(--accent-blue, #3b82f6) !important;
+    color: var(--accent-blue, #3b82f6) !important;
+}
+
+.fc-button-active {
+    background: var(--accent-blue, #3b82f6) !important;
+    border-color: var(--accent-blue, #3b82f6) !important;
+    color: white !important;
+}
+
+.fc-event {
+    border-radius: 0.25rem !important;
+    font-size: 0.75rem !important;
+    font-weight: 500 !important;
+    padding: 0.125rem 0.25rem !important;
+    cursor: pointer !important;
+}
+
+.fc-event:hover {
+    opacity: 0.8 !important;
+}
+
+.fc-daygrid-event {
+    margin: 1px 2px !important;
+}
+
+.fc-day-today {
+    background: var(--bg-secondary, #f9fafb) !important;
+}
+
+.fc-col-header-cell {
+    background: var(--bg-secondary, #f9fafb) !important;
+    font-weight: 600 !important;
+    color: var(--text-primary, #1f2937) !important;
+    padding: 0.5rem !important;
+}
+
+.fc-daygrid-day-number {
+    color: var(--text-primary, #1f2937) !important;
+    font-weight: 500 !important;
+}
+
+.fc-list-event:hover {
+    background: var(--bg-secondary, #f9fafb) !important;
+}
+
+.fc-list-event-title {
+    font-weight: 500 !important;
+}
+
+.fc-list-event-time {
+    color: var(--text-secondary, #6b7280) !important;
+}
+
+/* Tooltip styles */
+.calendar-tooltip {
+    z-index: 1000 !important;
+    pointer-events: none;
+}

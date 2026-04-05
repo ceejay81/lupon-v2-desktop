@@ -1,0 +1,417 @@
+@page {
+    size: 8.5in 14in;
+    margin: 0;
+}
+
+/* ── Word-Style Ribbon Toolbar ── */
+@media print {
+    .ribbon {
+        display: none !important;
+    }
+}
+
+.ribbon {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 9999;
+    background: #2b2b2b;
+    color: #ffffff;
+    border-bottom: 1px solid #444;
+    display: flex;
+    justify-content: center;
+    padding: 8px 12px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    user-select: none;
+}
+
+.ribbon-group {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    border-right: 1px solid #444;
+    padding: 0 24px;
+    position: relative;
+}
+
+.ribbon-group:last-child {
+    border-right: none;
+}
+
+.group-title {
+    font-size: 11px;
+    color: #aaa;
+    text-align: center;
+    margin-top: 6px;
+    width: 100%;
+}
+
+.group-content {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    align-items: center;
+}
+
+.ribbon button {
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 26px;
+    min-width: 26px;
+    font-size: 14px;
+    padding: 0 4px;
+}
+
+.ribbon button:hover {
+    background: #444;
+    border-color: #555;
+}
+
+.ribbon button.active {
+    background: #555;
+    border-color: #666;
+}
+
+.ribbon button b {
+    font-weight: bold;
+    font-family: 'Times New Roman', serif;
+    font-size: 15px;
+}
+
+.ribbon button i {
+    font-style: italic;
+    font-family: 'Times New Roman', serif;
+    font-size: 15px;
+}
+
+.ribbon button u {
+    text-decoration: underline;
+    font-family: 'Times New Roman', serif;
+    font-size: 15px;
+}
+
+.ribbon button s {
+    text-decoration: line-through;
+}
+
+.ribbon select {
+    background: #333;
+    color: #fff;
+    border: 1px solid #555;
+    border-radius: 3px;
+    height: 24px;
+    font-size: 12px;
+    padding: 0 4px;
+    outline: none;
+}
+
+.ribbon select:hover {
+    border-color: #777;
+}
+
+.ribbon option {
+    background: #2b2b2b;
+}
+
+.color-picker {
+    width: 22px;
+    height: 22px;
+    padding: 0;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    background: transparent;
+}
+
+.color-picker::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+
+.color-picker::-webkit-color-swatch {
+    border: 1px solid #555;
+    border-radius: 2px;
+}
+
+/* Alignment Icons */
+.icon-align {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    width: 14px;
+    align-items: center;
+}
+
+.icon-align span {
+    background: #fff;
+    height: 1px;
+    width: 100%;
+}
+
+.icon-left {
+    align-items: flex-start;
+}
+
+.icon-left span:nth-child(even) {
+    width: 70%;
+}
+
+.icon-center {
+    align-items: center;
+}
+
+.icon-center span:nth-child(even) {
+    width: 70%;
+}
+
+.icon-right {
+    align-items: flex-end;
+}
+
+.icon-right span:nth-child(even) {
+    width: 70%;
+}
+
+.icon-justify span {
+    width: 100% !important;
+}
+
+.icon-justify span:nth-child(even) {
+    width: 100% !important;
+}
+
+/* Image Upload Buttons in Toolbar */
+.upload-btn-wrapper {
+    position: relative;
+    overflow: hidden;
+    display: inline-block;
+}
+
+.upload-btn-wrapper button {
+    border: 1px solid #555;
+    padding: 0 8px;
+    font-size: 12px;
+}
+
+.upload-btn-wrapper input[type=file] {
+    position: absolute;
+    left: 0;
+    top: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+/* ── Page layout ── */
+@media screen {
+    body {
+        background-color: #525659 !important;
+        display: flex;
+        justify-content: center;
+        padding-top: 120px;
+        padding-bottom: 2rem;
+        margin: 0;
+        font-family: Arial, sans-serif;
+        font-size: 12pt;
+    }
+
+    .paper-wrapper {
+        background: white;
+        width: 8.5in;
+        min-height: 14in;
+        padding-top: 1in;
+        padding-bottom: 1in;
+        padding-left: 0.8in;
+        padding-right: 0.8in;
+        box-sizing: border-box;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+        position: relative;
+        overflow: hidden;
+        z-index: 0;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .header-banner {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 10;
+        pointer-events: none;
+        opacity: 1.0;
+    }
+
+    .watermark-bg {
+        position: absolute;
+        top: 3.5in;
+        left: 0;
+        width: 8.5in;
+        opacity: 0.9;
+        z-index: 1;
+        pointer-events: none;
+    }
+}
+
+@media print {
+    body {
+        background: transparent !important;
+        padding: 0;
+        margin: 0;
+        font-family: Arial, sans-serif;
+        font-size: 12pt;
+    }
+
+    .paper-wrapper {
+        width: 100%;
+        height: 100%;
+        padding-top: 1in;
+        padding-bottom: 1in;
+        padding-left: 0.8in;
+        padding-right: 0.8in;
+        box-sizing: border-box;
+        position: relative;
+        overflow: hidden;
+        z-index: 0;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .header-banner {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: auto;
+        z-index: 10;
+        opacity: 1.0;
+    }
+
+    .watermark-bg {
+        position: absolute;
+        top: 3.5in;
+        left: 0;
+        width: 100%;
+        height: auto;
+        opacity: 0.9;
+        z-index: 1;
+        pointer-events: none;
+    }
+
+    #doc-body:empty::before {
+        display: none;
+    }
+
+    #doc-body {
+        min-height: 0 !important;
+    }
+}
+
+/* editable area */
+#doc-body {
+    margin-top: 2in;
+    position: relative;
+    z-index: 2;
+    font-family: Arial, sans-serif;
+    cursor: text;
+    flex-grow: 1;
+    min-height: 10.5in;
+    background: transparent !important;
+}
+
+#doc-body:focus {
+    outline: none;
+}
+
+#doc-body:empty::before {
+    content: "Start typing your document here...";
+    color: #aaa;
+    font-style: italic;
+}
+
+/* Default Helpers */
+.text-center {
+    text-align: center;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.font-bold {
+    font-weight: bold;
+}
+
+.italic {
+    font-style: italic;
+}
+
+.underline {
+    text-decoration: underline;
+}
+
+.uppercase {
+    text-transform: uppercase;
+}
+
+/* ── Smart Underline Utility ── */
+.doc-field {
+    display: inline-block;
+    border-bottom: 1px solid black;
+    padding: 0 4px;
+    text-align: center;
+    vertical-align: baseline;
+    font-weight: bold;
+    min-width: 1.5in;
+    /* Default placeholder width */
+}
+
+/* 
+   BASELINE WIDTHS (When data is present) 
+   Prevents excessive lines for short values while maintaining scannability.
+*/
+.doc-field:not(:empty) {
+    min-width: 0.5in;
+}
+
+/* Tiered Placeholder Widths (When empty) */
+.doc-field-short:empty {
+    min-width: 0.5in;
+}
+
+.doc-field-medium:empty {
+    min-width: 1.5in;
+}
+
+.doc-field-long:empty {
+    min-width: 3in;
+}
+
+.doc-field-full:empty {
+    width: 100%;
+    border-bottom: 1px solid black;
+    display: inline-block;
+}
+
+/* Tiered Baseline Widths (When data is present) */
+.doc-field-short:not(:empty) {
+    min-width: 0.25in;
+}
+
+.doc-field-medium:not(:empty) {
+    min-width: 0.75in;
+}
+
+.doc-field-long:not(:empty) {
+    min-width: 1.25in;
+}
+
+.doc-field-full:not(:empty) {
+    width: 100%;
+    display: inline-block;
+}
