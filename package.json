@@ -4,7 +4,9 @@
     "type": "module",
     "scripts": {
         "build": "vite build",
-        "dev": "vite"
+        "dev": "vite",
+        "native:dev": "node vendor/nativephp/desktop/resources/js/dev.js",
+        "native:build": "node vendor/nativephp/desktop/resources/js/build.js"
     },
     "devDependencies": {
         "@tailwindcss/vite": "^4.0.0",

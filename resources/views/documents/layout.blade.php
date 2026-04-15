@@ -43,6 +43,33 @@
                 .paper-wrapper { box-shadow: none !important; width: 100% !important; margin: 0 !important; }
             }
         @endif
+
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+
+            .watermark {
+                display: none !important;
+            }
+
+            .watermark-print {
+                position: fixed;
+                top: 2.5in;
+                left: 0;
+                right: 0;
+                width: 7.5in;
+                margin: 0 auto;
+                z-index: -1;
+                opacity: 0.12;
+                pointer-events: none;
+                display: block !important;
+            }
+        }
+
+        .watermark-print {
+            display: none;
+        }
     </style>
 
     @if(request('print'))
@@ -58,17 +85,36 @@
 </head>
 
 <body class="antialiased">
+    <!-- REPEATING WATERMARK FOR PRINT -->
+    <img src="{{ $isArchive && isset($watermark) ? $watermark : asset('documents/images/watermark.png') }}" 
+         class="watermark-print" alt="Repeating Watermark" />
 
     @unless(request('print'))
-    <div style="position: fixed; top: 1rem; left: 1rem; z-index: 9999; display: flex; gap: 0.5rem;">
-        <button onclick="history.back()"
-            style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: white; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 0.8rem; font-weight: 600; color: #475569; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.1); font-family: inherit;"
-            onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='white'">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256">
+    @php
+        $backUrl = route('dashboard');
+        $backLabel = 'Back';
+
+        if (isset($case)) {
+            $backUrl = route('cases.show', $case);
+            $backLabel = 'Back to Case ' . $case->case_number;
+        } elseif (isset($month) && isset($year)) {
+            $backUrl = route('reports.index', ['month' => $month, 'year' => $year]);
+            $backLabel = 'Back to Reports';
+        } elseif (isset($case_id) && $case_id) {
+            $backUrl = route('cases.show', $case_id);
+            $backLabel = 'Back to Case';
+        }
+    @endphp
+    <div class="no-print" style="position: fixed; top: 1rem; left: 1rem; z-index: 9999; display: flex; gap: 0.5rem;">
+        <a href="{{ $backUrl }}"
+            style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1.25rem; background: white; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 0.8rem; font-weight: 700; color: #1e293b; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.08); font-family: inherit; text-decoration: none; transition: all 0.2s;"
+            onmouseover="this.style.background='#f8fafc'; this.style.transform='translateY(-1px)'; this.style.boxShadow='0 6px 16px rgba(0,0,0,0.12)';" 
+            onmouseout="this.style.background='white'; this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.08)';">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 256 256">
                 <path d="M224,128a8,8,0,0,1-8,8H59.31l58.35,58.34a8,8,0,0,1-11.32,11.32l-72-72a8,8,0,0,1,0-11.32l72-72a8,8,0,0,1,11.32,11.32L59.31,120H216A8,8,0,0,1,224,128Z"/>
             </svg>
-            Back
-        </button>
+            {{ $backLabel }}
+        </a>
     </div>
     @endunless
 

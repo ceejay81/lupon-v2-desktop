@@ -10,6 +10,13 @@
     <link rel="stylesheet" href="{{ asset('vendor/phosphor-icons/regular/style.css') }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     {{-- Alpine.js is now managed natively by Livewire 3 --}}
+    <style>
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+        }
+    </style>
 </head>
 
 <body x-data="{ sidebarCollapsed: localStorage.getItem('sidebar-collapsed') === 'true' }" x-effect="localStorage.setItem('sidebar-collapsed', sidebarCollapsed)">
@@ -24,7 +31,7 @@
 
     <div class="app-container">
         <!-- Vertical Sidebar -->
-        <aside class="sidebar" :class="{ 'collapsed': sidebarCollapsed }">
+        <aside class="sidebar no-print" :class="{ 'collapsed': sidebarCollapsed }">
             <div class="sidebar-header">
                 <div class="logo-wrapper">
                     <img src="{{ asset(\App\Models\Setting::get('barangay_logo_path') ?: 'images/bulalogo.png') }}" alt="Barangay Logo" class="sidebar-logo">
@@ -35,10 +42,6 @@
                 </div>
             </div>
 
-            <!-- Sidebar Toggle Tab -->
-            <button @click="sidebarCollapsed = !sidebarCollapsed" class="sidebar-toggle" title="Toggle Sidebar">
-                <i class="ph-bold ph-caret-left sidebar-toggle-icon"></i>
-            </button>
 
             <nav class="sidebar-nav">
                 <div class="nav-group">
@@ -109,10 +112,18 @@
             </div>
         </aside>
 
+        <!-- Sidebar Toggle (Floating Circular Button) -->
+        <button @click="sidebarCollapsed = !sidebarCollapsed" 
+                class="sidebar-toggle no-print" 
+                :class="{ 'collapsed': sidebarCollapsed }" 
+                title="Toggle Sidebar">
+            <i class="ph ph-caret-left sidebar-toggle-icon" :class="{ 'is-collapsed': sidebarCollapsed }"></i>
+        </button>
+
         <!-- Main Content Area -->
         <main class="main-content" :class="{ 'collapsed': sidebarCollapsed }">
             <!-- Top Bar -->
-            <header class="top-bar">
+            <header class="top-bar no-print">
                 <div class="top-bar-left">
                     <h2 class="page-title">@yield('page-title', 'Dashboard')</h2>
                 </div>
@@ -128,7 +139,7 @@
             </header>
 
             @if(session('success') || session('error') || session('message') || session('warning') || session('status') || session('attendance_message') || session('pangkat_message') || $errors->any())
-                <div class="alert-container">
+                <div class="alert-container no-print">
                     @foreach([
                         'success'            => ['type' => 'success', 'icon' => 'ph-check-circle'],
                         'message'            => ['type' => 'success', 'icon' => 'ph-check-circle'],
@@ -206,6 +217,7 @@
         });
     </script>
 
+    @stack('modals')
     @stack('scripts')
 </body>
 

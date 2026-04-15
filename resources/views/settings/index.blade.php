@@ -190,11 +190,27 @@
     {{-- ═══════════════════════════════════════════════════ --}}
     <div class="settings-tab-panel" id="tab-maintenance" style="display:none;">
         {{-- Backup Hero Card --}}
-        <div class="settings-backup-hero">
-            <div>
-                <h3 style="font-size: 0.7rem; font-weight: 700; color: rgba(255,255,255,0.7); text-transform: uppercase; letter-spacing: 0.05em;">System Database Utility</h3>
-                <div style="font-size: 1.5rem; font-weight: 700; color: white; margin: 4px 0;">Database Maintenance</div>
-                <p style="font-size: 0.8125rem; color: rgba(255,255,255,0.6);">Creates a full copy of the SQLite database file you can download and keep safe.</p>
+        <div class="settings-backup-hero" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border: 1px solid #334155; position: relative; overflow: hidden;">
+            {{-- Decorative Background Icons --}}
+            <i class="ph ph-usb" style="position: absolute; right: -20px; top: -20px; font-size: 8rem; color: rgba(255,255,255,0.03); transform: rotate(15deg);"></i>
+            <i class="ph ph-google-drive-logo" style="position: absolute; right: 80px; bottom: -20px; font-size: 6rem; color: rgba(255,255,255,0.03); transform: rotate(-10deg);"></i>
+
+            <div style="position: relative; z-index: 1;">
+                <h3 style="font-size: 0.7rem; font-weight: 800; color: var(--accent-blue); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px;">
+                    <i class="ph ph-shield-check"></i> System Protection
+                </h3>
+                <div style="font-size: 1.75rem; font-weight: 800; color: white; margin: 0 0 8px 0; letter-spacing: -0.02em;">Data Maintenance</div>
+                <p style="font-size: 0.875rem; color: #94a3b8; max-width: 480px; line-height: 1.6;">
+                    Creates a complete system snapshot (Database + Photos) bundled into a secure ZIP file for your records.
+                </p>
+                <div style="display: flex; gap: 16px; margin-top: 20px;">
+                    <div style="display: flex; align-items: center; gap: 8px; color: #64748b; font-size: 0.75rem; font-weight: 600;">
+                        <i class="ph ph-usb" style="font-size: 1.125rem;"></i> USB Safe
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px; color: #64748b; font-size: 0.75rem; font-weight: 600;">
+                        <i class="ph ph-google-drive-logo" style="font-size: 1.125rem;"></i> Cloud Ready
+                    </div>
+                </div>
             </div>
             <form action="{{ route('settings.maintenance') }}" method="POST">
                 @csrf
@@ -212,14 +228,14 @@
             </div>
             <div class="card-body">
                 <p style="font-size: 0.8125rem; color: var(--text-secondary); margin-bottom: 1.25rem;">
-                    Upload a previously downloaded <code>.sqlite</code> backup file to restore the database.
-                    The current database will be automatically saved as a safety backup before restoring.
+                    Upload a previously created <code>.zip</code> backup file to restore the database and system media.
+                    An emergency rollback snapshot is created automatically before any changes are made.
                 </p>
                 <form id="restore-form" action="{{ route('settings.maintenance.restore') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <input type="hidden" name="action" value="restore">
                     <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
-                        <input type="file" name="backup_file" accept=".sqlite,.db"
+                        <input type="file" name="backup_file" accept=".zip"
                                class="form-control" style="max-width: 360px;" required
                                x-ref="fileInput">
                         <button type="button" class="btn-primary"
@@ -240,8 +256,8 @@
                             <div style="width: 48px; height: 48px; background: var(--warning-light); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 1.25rem;">
                                 <i class="ph ph-warning" style="font-size: 1.5rem; color: var(--warning);"></i>
                             </div>
-                            <h3 style="font-size: 1rem; font-weight: 800; color: var(--text-primary); margin-bottom: 0.5rem;">Restore Database?</h3>
-                            <p style="font-size: 0.875rem; color: var(--text-secondary);">This will replace the current database with the uploaded file. A safety backup of the current database will be saved automatically before restoring.</p>
+                            <h3 style="font-size: 1rem; font-weight: 800; color: var(--text-primary); margin-bottom: 0.5rem;">Perform Full System Restore?</h3>
+                            <p style="font-size: 0.875rem; color: var(--text-secondary);">This will replace the current database and all media files with the content of the backup. An **Emergency Rollback** will be saved automatically.</p>
                         </div>
                         <div style="padding: 1rem 2rem 1.75rem; display: flex; gap: 0.75rem; justify-content: flex-end;">
                             <button @click="confirmRestore = false" type="button" class="btn-sm" style="height: 40px; padding: 0 1.25rem;">
@@ -313,9 +329,9 @@
                             </td>
                             <td>
                                 <div style="display: flex; align-items: center; gap: 0.75rem;">
-                                    <div style="width: 32px; height: 32px; background: var(--success-light); color: var(--success); border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                                        <i class="ph ph-file-sql"></i>
-                                    </div>
+                                <div style="width: 32px; height: 32px; background: #fef3c7; color: #d97706; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                    <i class="ph ph-file-zip"></i>
+                                </div>
                                     <span style="font-weight: 600; color: var(--text-primary);">{{ $backup['name'] }}</span>
                                 </div>
                             </td>
@@ -406,6 +422,49 @@
             </template>
         </div>
     </div>
+
+    {{-- ═══════════════════════════════════════════════════ --}}
+    {{-- POST-BACKUP SUCCESS MODAL                           --}}
+    {{-- ═══════════════════════════════════════════════════ --}}
+    @if(session('backup_success'))
+    @push('modals')
+    <div x-data="{ show: true }" x-show="show">
+        <div style="position: fixed; inset: 0; background: rgba(15,23,42,0.8); backdrop-filter: blur(8px); z-index: 999998;"></div>
+        <div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 999999; width: 100%; max-width: 440px; padding: 1rem;">
+            <div class="card" style="width: 100%; text-align: center; padding: 2.5rem 2rem; border: none; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);">
+            <div style="width: 64px; height: 64px; background: rgba(16, 185, 129, 0.1); color: #10b981; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem;">
+                <i class="ph ph-check-circle" style="font-size: 2.5rem;"></i>
+            </div>
+            <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary); margin-bottom: 0.5rem;">System Snapshot Complete</h2>
+            <p style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 2rem;">A secure record of your data has been saved to the server.</p>
+            
+            <div style="background: var(--gray-50); border-radius: 1rem; padding: 1.25rem; margin-bottom: 2rem; border: 1px dashed var(--gray-200);">
+                <h3 style="font-size: 0.75rem; font-weight: 800; color: var(--warning); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                    <i class="ph ph-warning-circle"></i> Vital Safety Step
+                </h3>
+                <p style="font-size: 0.8125rem; color: var(--text-primary); line-height: 1.5; font-weight: 600;">
+                    Download this file now and save it to a <span style="color: var(--accent-blue);">USB Drive</span> or <span style="color: var(--success);">Google Drive</span>.
+                </p>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                <a href="{{ route('settings.maintenance.download', ['action' => 'download', 'filename' => session('latest_backup')]) }}" 
+                   class="btn-primary" 
+                   style="height: 48px; display: flex; align-items: center; justify-content: center; gap: 8px; background: var(--accent-blue); font-size: 0.875rem;">
+                    <i class="ph ph-download-simple" style="font-size: 1.25rem;"></i> Download to This Computer
+                </a>
+                <button @click="show = false" 
+                        class="btn-secondary" 
+                        style="height: 44px; border: none; font-size: 0.8125rem;">
+                    I'll do it later
+                </button>
+            </div>
+        </div>
+    </div>
+        </div>
+    </div>
+    @endpush
+    @endif
 
     {{-- ═══════════════════════════════════════════════════ --}}
     {{-- TAB 4: Premium Branding (Hidden)                    --}}

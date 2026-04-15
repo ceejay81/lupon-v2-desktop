@@ -24,17 +24,17 @@ class Document extends Model
     public function getViewerUrlAttribute(): string
     {
         if ($this->file_path !== 'digital_record') {
-            return \Illuminate\Support\Facades\Storage::url($this->file_path);
+            return route('media.show', ['path' => $this->file_path]);
         }
 
         // Mapping types to their editor routes
         $routes = [
-            'Status of Case'                           => 'cases.export.status-of-case',
-            'Invitation Notice'                        => 'cases.export.invitation-notice',
-            'Notice of Hearing (KP Form 8)'            => 'cases.export.notice-of-hearing',
-            'Summons (KP Form 9)'                      => 'cases.export.summon',
-            'Amicable Settlement (KP Form 16)'         => 'cases.export.amicable-settlement',
-            'Kasabutan'                                => 'cases.export.kasabutan',
+            'Status of Case' => 'cases.export.status-of-case',
+            'Invitation Notice' => 'cases.export.invitation-notice',
+            'Notice of Hearing (KP Form 8)' => 'cases.export.notice-of-hearing',
+            'Summons (KP Form 9)' => 'cases.export.summon',
+            'Amicable Settlement (KP Form 16)' => 'cases.export.amicable-settlement',
+            'Kasabutan' => 'cases.export.kasabutan',
             'Certification to File Action (KP Form 20)' => 'cases.export.certificate-to-file-action',
         ];
 

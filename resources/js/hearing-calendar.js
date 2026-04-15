@@ -32,16 +32,16 @@ window.initHearingCalendar = function(events, initialView = 'dayGridMonth') {
             const tooltip = document.createElement('div');
             tooltip.className = 'calendar-tooltip';
             tooltip.innerHTML = `
-                <div style="background: white; border: 1px solid var(--border-light); border-radius: var(--radius-md); padding: 1rem; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); font-size: 0.875rem; max-width: 280px; z-index: 1000;">
-                    <div style="font-weight: 700; color: var(--text-primary); margin-bottom: 0.75rem; font-size: 1rem;">${info.event.extendedProps.nature_of_case}</div>
-                    <div style="margin-bottom: 0.5rem;"><strong>📅 When:</strong> ${info.event.extendedProps.scheduled_time}</div>
-                    <div style="margin-bottom: 0.5rem;"><strong>📍 Where:</strong> ${info.event.extendedProps.location}</div>
-                    <div style="margin-bottom: 0.5rem;"><strong>⚖️ Type:</strong> ${info.event.extendedProps.hearing_type}</div>
-                    <div style="margin-bottom: 0.5rem;"><strong>📋 Status:</strong> ${info.event.extendedProps.status}</div>
-                    <hr style="margin: 0.75rem 0; border: none; border-top: 1px solid #e5e7eb;">
-                    <div style="margin-bottom: 0.25rem;"><strong>👤 Complainant:</strong> ${info.event.extendedProps.complainant}</div>
-                    <div style="margin-bottom: 0.25rem;"><strong>👤 Respondent:</strong> ${info.event.extendedProps.respondent}</div>
-                    <div style="margin-top: 0.75rem; font-size: 0.75rem; color: #64748b;">Case: ${info.event.extendedProps.case_number}</div>
+                <div style="background: var(--bg-card); border: 1px solid var(--border-medium); border-radius: var(--radius-md); padding: 1.25rem; box-shadow: var(--shadow-lg); font-size: 0.875rem; max-width: 300px; z-index: 1000; color: var(--text-primary);">
+                    <div style="font-weight: 800; color: var(--accent-blue); margin-bottom: 0.75rem; font-size: 1.125rem; line-height: 1.2;">${info.event.extendedProps.nature_of_case}</div>
+                    <div style="margin-bottom: 0.625rem; display: flex; align-items: flex-start; gap: 0.5rem;"><span style="color: var(--text-muted); width: 20px;">📅</span> <span><strong>When:</strong> ${info.event.extendedProps.scheduled_time}</span></div>
+                    <div style="margin-bottom: 0.625rem; display: flex; align-items: flex-start; gap: 0.5rem;"><span style="color: var(--text-muted); width: 20px;">📍</span> <span><strong>Where:</strong> ${info.event.extendedProps.location}</span></div>
+                    <div style="margin-bottom: 0.625rem; display: flex; align-items: flex-start; gap: 0.5rem;"><span style="color: var(--text-muted); width: 20px;">⚖️</span> <span><strong>Type:</strong> ${info.event.extendedProps.hearing_type}</span></div>
+                    <div style="margin-bottom: 0.625rem; display: flex; align-items: flex-start; gap: 0.5rem;"><span style="color: var(--text-muted); width: 20px;">📋</span> <span><strong>Status:</strong> ${info.event.extendedProps.status}</span></div>
+                    <hr style="margin: 1rem 0; border: none; border-top: 1px solid var(--border-light);">
+                    <div style="margin-bottom: 0.375rem; display: flex; align-items: center; gap: 0.5rem;"><i class="ph-bold ph-user" style="color: var(--accent-blue); font-size: 0.75rem;"></i> <strong>Complainant:</strong> ${info.event.extendedProps.complainant}</div>
+                    <div style="margin-bottom: 0.375rem; display: flex; align-items: center; gap: 0.5rem;"><i class="ph-bold ph-user" style="color: var(--danger); font-size: 0.75rem;"></i> <strong>Respondent:</strong> ${info.event.extendedProps.respondent}</div>
+                    <div style="margin-top: 1rem; font-size: 0.75rem; color: var(--text-muted); font-weight: 600; background: var(--bg-hover); padding: 4px 8px; border-radius: 4px; display: inline-block;">Case: ${info.event.extendedProps.case_number}</div>
                 </div>
             `;
             

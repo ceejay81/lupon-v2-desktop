@@ -118,42 +118,55 @@ body {
 }
 
 .sidebar-toggle {
-    position: absolute;
-    top: 24px;
-    right: -16px;
-    width: 16px;
-    height: 48px;
-    background: var(--accent-blue);
-    border: none;
-    border-radius: 0 8px 8px 0;
+    position: fixed;
+    top: 32px;
+    left: 266px; /* 280px (sidebar) - 14px (half of 28px) */
+    width: 28px;
+    height: 28px;
+    background: var(--bg-card);
+    border: 1px solid var(--gray-200);
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    color: white;
-    transition: background 0.2s, width 0.2s;
-    z-index: 101;
-    flex-shrink: 0;
+    color: var(--accent-blue);
+    box-shadow: var(--shadow-md);
+    z-index: 1000;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     padding: 0;
 }
 
+.sidebar-toggle.collapsed {
+    left: 66px; /* 80px (collapsed sidebar) - 14px */
+}
+
 .sidebar-toggle:hover {
-    background: var(--accent-blue);
-    width: 20px;
-    filter: brightness(1.15);
+    transform: scale(1.1);
+    background: var(--accent-light);
+    border-color: var(--accent-blue);
+    box-shadow: var(--shadow-lg);
 }
 
-.sidebar-toggle i {
-    font-size: 0.7rem;
-    line-height: 1;
+.sidebar-toggle-icon {
+    font-size: 0.85rem;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.sidebar-toggle-icon::before {
-    content: "\e138";
+.sidebar-toggle-icon.is-collapsed {
+    transform: rotate(180deg);
 }
 
-.sidebar.collapsed .sidebar-toggle-icon::before {
-    content: "\e13a";
+[data-theme="dark"] .sidebar-toggle {
+    background: #1e293b;
+    border-color: #334155;
+    color: var(--accent-blue);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="dark"] .sidebar-toggle:hover {
+    background: #334155;
+    border-color: var(--accent-blue);
 }
 
 .logo-wrapper {

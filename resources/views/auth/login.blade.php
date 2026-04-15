@@ -18,7 +18,7 @@
             <div class="login-left-content">
                 <!-- Framed illustration with warm tan textured border -->
                 <div class="login-illustration-frame">
-                    <div class="login-illustration-image" style="background-image: url('{{ asset('images/luponloginlogo.png') }}');"></div>
+                    <img src="{{ asset('images/luponloginlogo.png') }}" alt="Lupon Illustration" class="login-illustration-image">
                 </div>
             </div>
         </div>

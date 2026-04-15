@@ -86,7 +86,7 @@
                             <i class="ph ph-article" style="font-size: 1.1rem;"></i>
                         </div>
                     @elseif($isImage)
-                        <img src="{{ \Illuminate\Support\Facades\Storage::url($doc->file_path) }}" style="width: 32px; height: 32px; border-radius: var(--radius-sm); object-fit: cover; flex-shrink: 0; border: 1px solid var(--border-light);">
+                        <img src="{{ route('media.show', ['path' => $doc->file_path]) }}" style="width: 32px; height: 32px; border-radius: var(--radius-sm); object-fit: cover; flex-shrink: 0; border: 1px solid var(--border-light);">
                     @else
                         <i class="ph ph-file-pdf" style="font-size: 1.25rem; color: var(--danger); flex-shrink: 0;"></i>
                     @endif

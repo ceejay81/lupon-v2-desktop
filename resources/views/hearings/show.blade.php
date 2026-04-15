@@ -138,7 +138,7 @@
                         @if($hearing->minutes)
                             <div>
                                 <label style="display: block; font-size: 0.625rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.75rem; padding-left: 2px;">Session Minutes</label>
-                                <div style="background: var(--bg-card); padding: 1.25rem; border-radius: 12px; border: 1px solid var(--border-color); font-size: 0.8125rem; line-height: 1.6; color: var(--text-secondary); white-space: pre-wrap; font-style: italic;">{{ $hearing->minutes }}</div>
+                                <div style="background: var(--bg-page); padding: 1.25rem; border-radius: 12px; border: 1px solid var(--border-color); font-size: 0.8125rem; line-height: 1.6; color: var(--text-secondary); white-space: pre-wrap; font-style: italic;">{{ $hearing->minutes }}</div>
                             </div>
                         @endif
                     </div>

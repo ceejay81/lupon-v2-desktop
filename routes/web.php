@@ -1,8 +1,7 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Auth\LoginController;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return redirect()->route('dashboard');
@@ -22,8 +21,8 @@ Route::middleware('auth')->group(function () {
 
     // Dashboard
     Route::get('/dashboard', [\App\Http\Controllers\DashboardController::class, 'index'])
-    ->middleware(['auth'])
-    ->name('dashboard');
+        ->middleware(['auth'])
+        ->name('dashboard');
 
     // Cases (Digital Blotter)
     Route::resource('cases', App\Http\Controllers\LuponCaseController::class)->only(['index', 'create', 'show', 'edit']);
@@ -59,19 +58,18 @@ Route::middleware('auth')->group(function () {
     // Citizen Registry
     Route::resource('citizens', App\Http\Controllers\CitizenController::class);
 
-
     // KP Document Exports
     Route::prefix('cases/{case}/export')->name('cases.export.')->group(function () {
-        Route::get('notice-of-hearing',        [App\Http\Controllers\DocumentExportController::class, 'noticeOfHearing'])->name('notice-of-hearing');
-        Route::get('summon',                   [App\Http\Controllers\DocumentExportController::class, 'summon'])->name('summon');
-        Route::get('invitation-notice',        [App\Http\Controllers\DocumentExportController::class, 'invitationNotice'])->name('invitation-notice');
-        Route::get('amicable-settlement',      [App\Http\Controllers\DocumentExportController::class, 'amicableSettlement'])->name('amicable-settlement');
-        Route::get('kasabutan',                [App\Http\Controllers\DocumentExportController::class, 'kasabutan'])->name('kasabutan');
+        Route::get('notice-of-hearing', [App\Http\Controllers\DocumentExportController::class, 'noticeOfHearing'])->name('notice-of-hearing');
+        Route::get('summon', [App\Http\Controllers\DocumentExportController::class, 'summon'])->name('summon');
+        Route::get('invitation-notice', [App\Http\Controllers\DocumentExportController::class, 'invitationNotice'])->name('invitation-notice');
+        Route::get('amicable-settlement', [App\Http\Controllers\DocumentExportController::class, 'amicableSettlement'])->name('amicable-settlement');
+        Route::get('kasabutan', [App\Http\Controllers\DocumentExportController::class, 'kasabutan'])->name('kasabutan');
         Route::get('certificate-to-file-action', [App\Http\Controllers\DocumentExportController::class, 'certificateToFileAction'])->name('certificate-to-file-action');
-        Route::get('status-of-case',           [App\Http\Controllers\DocumentExportController::class, 'statusOfCase'])->name('status-of-case');
-        Route::get('endorsement',              [App\Http\Controllers\DocumentExportController::class, 'endorsement'])->name('endorsement');
-        Route::post('save-content',            [App\Http\Controllers\DocumentExportController::class, 'saveContent'])->name('save-content');
-        Route::post('update-from-document',   [App\Http\Controllers\LuponCaseController::class, 'updateFromDocument'])->name('update-from-document');
+        Route::get('status-of-case', [App\Http\Controllers\DocumentExportController::class, 'statusOfCase'])->name('status-of-case');
+        Route::get('endorsement', [App\Http\Controllers\DocumentExportController::class, 'endorsement'])->name('endorsement');
+        Route::post('save-content', [App\Http\Controllers\DocumentExportController::class, 'saveContent'])->name('save-content');
+        Route::post('update-from-document', [App\Http\Controllers\LuponCaseController::class, 'updateFromDocument'])->name('update-from-document');
         Route::post('toggle-step-completion', [App\Http\Controllers\LuponCaseController::class, 'toggleStepCompletion'])->name('toggle-step-completion');
     });
 
@@ -80,4 +78,9 @@ Route::middleware('auth')->group(function () {
     Route::post('reports/finalize', [App\Http\Controllers\ReportController::class, 'finalize'])->name('reports.finalize');
     Route::get('reports/print/{report}', [App\Http\Controllers\ReportController::class, 'printReport'])->name('reports.print');
     Route::get('reports/print-template/{name}', [App\Http\Controllers\ReportController::class, 'printTemplate'])->name('reports.print-template');
+
+    // Media Proxy (Bypasses storage symlink for .exe portability)
+    Route::get('media/{path}', [\App\Http\Controllers\MediaController::class, 'show'])
+        ->where('path', '.*')
+        ->name('media.show');
 });

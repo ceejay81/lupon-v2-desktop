@@ -20,8 +20,8 @@
                         <i class="ph ph-user-circle" style="font-size: 1.5rem;"></i>
                     </div>
                     <div>
-                        <p style="font-size: 0.875rem; font-weight: 700; color: var(--text-primary, #1e293b); margin: 0;">Complainant</p>
-                        <p style="font-size: 0.75rem; color: var(--text-muted, #94a3b8); margin: 0;">{{ $hearing->luponCase->complainant }}</p>
+                        <p style="font-size: 0.875rem; font-weight: 700; color: var(--text-primary); margin: 0;">Complainant</p>
+                        <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0;">{{ $hearing->luponCase->complainant }}</p>
                     </div>
                 </div>
                 <input type="checkbox" wire:click="toggleComplainant" @checked($complainant_attended) style="display: none;">
@@ -41,8 +41,8 @@
                         <i class="ph ph-user-circle-minus" style="font-size: 1.5rem;"></i>
                     </div>
                     <div>
-                        <p style="font-size: 0.875rem; font-weight: 700; color: var(--text-primary, #1e293b); margin: 0;">Respondent</p>
-                        <p style="font-size: 0.75rem; color: var(--text-muted, #94a3b8); margin: 0;">{{ $hearing->luponCase->respondent }}</p>
+                        <p style="font-size: 0.875rem; font-weight: 700; color: var(--text-primary); margin: 0;">Respondent</p>
+                        <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0;">{{ $hearing->luponCase->respondent }}</p>
                     </div>
                 </div>
                 <input type="checkbox" wire:click="toggleRespondent" @checked($respondent_attended) style="display: none;">

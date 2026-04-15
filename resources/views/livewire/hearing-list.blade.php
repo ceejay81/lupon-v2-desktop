@@ -26,7 +26,7 @@
     {{-- Hearing Form Modal Moved to Index --}}
 
     {{-- Filters Section --}}
-    <div style="padding: 1.5rem 2rem; border-bottom: 1px solid var(--border-color); background: var(--bg-hover); display: flex; gap: 1.5rem; align-items: center; flex-wrap: wrap;">
+    <div style="padding: 1.5rem 2rem; border-bottom: 1px solid var(--border-color); background: var(--bg-card); display: flex; gap: 1.5rem; align-items: center; flex-wrap: wrap;">
         <div style="position: relative; flex: 1; min-width: 300px; max-width: 400px;">
             <i class="ph ph-magnifying-glass" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 1rem;"></i>
             <input wire:model.live.debounce.300ms="search"
@@ -58,7 +58,7 @@
     <div style="overflow-x: auto;">
         <table style="width: 100%; border-collapse: collapse;">
             <thead>
-                <tr style="background: var(--bg-hover); border-bottom: 2px solid var(--border-color);">
+                <tr style="background: var(--bg-card); border-bottom: 2px solid var(--border-color);">
                     <th style="padding: 1.25rem 2rem; text-align: left; font-size: 0.6875rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">Case Details</th>
                     <th style="padding: 1.25rem 2rem; text-align: left; font-size: 0.6875rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">Parties</th>
                     <th style="padding: 1.25rem 2rem; text-align: left; font-size: 0.6875rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">Category</th>

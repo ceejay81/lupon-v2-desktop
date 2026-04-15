@@ -76,8 +76,10 @@
 
     /* FullCalendar Dark Mode Refinement */
     [data-theme="dark"] .fc {
-        --fc-border-color: #1e293b;
+        --fc-border-color: #334155;
         --fc-page-bg-color: #0f172a;
+        --fc-neutral-bg-color: #1e293b;
+        --fc-list-event-hover-bg-color: #1e3a5f;
     }
     [data-theme="dark"] .fc-theme-standard td, 
     [data-theme="dark"] .fc-theme-standard th {
@@ -96,13 +98,23 @@
     [data-theme="dark"] .fc-scrollgrid {
         border-color: #334155;
     }
+    [data-theme="dark"] .fc-list-day-cushion {
+        background-color: #1e293b !important;
+    }
+    [data-theme="dark"] .fc-list-event:hover td {
+        background-color: #1e3a5f !important;
+    }
+    [data-theme="dark"] .fc-list-empty {
+        background-color: #0f172a;
+        color: var(--text-muted);
+    }
     [data-theme="dark"] .fc-button-primary {
-        background-color: #1e293b;
-        border-color: #334155;
-        color: var(--text-primary);
+        background-color: #1e293b !important;
+        border-color: #334155 !important;
+        color: var(--text-primary) !important;
     }
     [data-theme="dark"] .fc-button-primary:hover {
-        background-color: #334155;
+        background-color: #334155 !important;
     }
     [data-theme="dark"] .fc-toolbar-title {
         color: var(--text-primary);
@@ -115,6 +127,38 @@
     [data-theme="dark"] .saas-tabs {
         background: #0f172a !important;
         border-color: #334155 !important;
+    }
+
+    /* Forced Tooltip Overrides - Aggressive to bypass inline styles */
+    [data-theme="dark"] .calendar-tooltip div[style*="background: white"],
+    [data-theme="dark"] .calendar-tooltip div[style*="background:white"],
+    [data-theme="dark"] .calendar-tooltip > div {
+        background-color: #1e293b !important;
+        background: #1e293b !important;
+        color: #f1f5f9 !important;
+        border-color: #334155 !important;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5) !important;
+    }
+
+    [data-theme="dark"] .calendar-tooltip div[style*="background: var(--bg-card)"] {
+        /* If the new JS actually works, this just reinforces it */
+        background-color: #1e293b !important;
+    }
+
+    [data-theme="dark"] .calendar-tooltip hr {
+        border-top-color: #334155 !important;
+        opacity: 0.3;
+    }
+
+    [data-theme="dark"] .calendar-tooltip strong,
+    [data-theme="dark"] .calendar-tooltip b,
+    [data-theme="dark"] .calendar-tooltip span {
+        color: #f1f5f9 !important;
+    }
+
+    [data-theme="dark"] .calendar-tooltip .ph-bold,
+    [data-theme="dark"] .calendar-tooltip i {
+        color: #60a5fa !important;
     }
 </style>
 

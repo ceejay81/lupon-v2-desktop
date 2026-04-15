@@ -1,3 +1,13 @@
+/**
+ * Luponv2 Document Editor Toolbar & Logic
+ * Handles rich text editing, auto-saving, and navigation safety.
+ */
+
+// Global State
+let isDirty = false;
+let autoSaveTimeout = null;
+const AUTO_SAVE_DELAY = 15000; // 15 seconds
+
 document.addEventListener("DOMContentLoaded", function() {
     // 1. Inject the HTML Ribbon at the top of the body
     const ribbonHTML = `
@@ -83,10 +93,14 @@ document.addEventListener("DOMContentLoaded", function() {
             <div class="group-content" style="margin-top: 4px; justify-content: center;">
                 <button onclick="cmd('undo')" title="Undo (Ctrl+Z)">&#8630;</button>
                 <button onclick="cmd('redo')" title="Redo (Ctrl+Y)">&#8631;</button>
-                <button id="btn-save-case" onclick="saveCaseChanges()" title="Save Changes to Case Record" style="background:#16a34a; border-color:#15803d; color:white; margin-left: 10px;">💾 Save to Case</button>
+                <button id="btn-save-case" onclick="saveDocumentChanges()" title="Save Changes to Database" style="background:#16a34a; border-color:#15803d; color:white; margin-left: 10px;">💾 Save Document</button>
                 <button onclick="window.print()" title="Print" style="background:#0078d4; border-color:#005a9e; margin-left: 5px;">🖨 Print</button>
             </div>
             <div class="group-title">Document</div>
+        </div>
+
+        <div id="save-status" style="position: absolute; right: 10px; bottom: 5px; font-size: 11px; color: #888; font-style: italic;">
+            All changes saved
         </div>
     </div>
     `;
@@ -97,9 +111,10 @@ document.addEventListener("DOMContentLoaded", function() {
     // 2. Attach Event Listeners for Toolbar State
     document.addEventListener('selectionchange', updateActiveStates);
 
-    // 3. Double-click to type anywhere (like MS Word)
+    // 3. Setup Editor and Auto-save
     const docBody = document.getElementById('doc-body');
     if (docBody) {
+        // Double-click to type anywhere (like MS Word)
         docBody.addEventListener('dblclick', function(e) {
             if (e.target !== docBody) return;
             const rect = docBody.getBoundingClientRect();
@@ -122,15 +137,33 @@ document.addEventListener("DOMContentLoaded", function() {
             sel.removeAllRanges();
             sel.addRange(range);
             newBlock.focus();
+            
+            markDirty();
+        });
+
+        // Input listener to detect changes
+        docBody.addEventListener('input', function() {
+            markDirty();
         });
     }
+
+    // 4. Navigation warning
+    window.addEventListener('beforeunload', function (e) {
+        if (isDirty) {
+            e.preventDefault();
+            e.returnValue = ''; // Standard way to trigger the confirmation
+        }
+    });
 });
 
 // Run execCommand and keep focus
 window.cmd = function(command, value=null) {
     document.execCommand(command, false, value);
     const editable = document.getElementById('doc-body');
-    if(editable) editable.focus();
+    if(editable) {
+        editable.focus();
+        markDirty();
+    }
 };
 
 // Highlight active buttons
@@ -149,23 +182,31 @@ window.previewImage = function(input, imgId) {
         var reader = new FileReader();
         reader.onload = function(e) {
             document.getElementById(imgId).src = e.target.result;
+            markDirty();
         }
         reader.readAsDataURL(input.files[0]);
     }
 };
 
 // Save Changes Logic (Handles both Cases and Reports)
-window.saveDocumentChanges = function() {
+window.saveDocumentChanges = function(isAuto = false) {
     const btn = document.getElementById('btn-save-case');
-    const originalText = btn.innerHTML;
+    const originalText = btn ? btn.innerHTML : "💾 Save Document";
+    const saveStatus = document.getElementById('save-status');
     
     // Collect the entire HTML body instead of just fields
     const docBody = document.getElementById('doc-body');
+    if (!docBody) return;
+    
     const content = docBody.innerHTML;
 
-    // Visual feedback
-    btn.innerHTML = "⏳ Saving...";
-    btn.disabled = true;
+    if (!isAuto && btn) {
+        // Visual feedback for manual save
+        btn.innerHTML = "⏳ Saving...";
+        btn.disabled = true;
+    } else {
+        if (saveStatus) saveStatus.innerHTML = "<i>Autosaving...</i>";
+    }
 
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
@@ -177,7 +218,7 @@ window.saveDocumentChanges = function() {
         year: window.REPORT_YEAR
     };
 
-    fetch(window.SAVE_ROUTE, {
+    return fetch(window.SAVE_ROUTE, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -189,35 +230,54 @@ window.saveDocumentChanges = function() {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            btn.innerHTML = "✅ Saved!";
-            btn.style.background = "#059669";
-            setTimeout(() => {
-                btn.innerHTML = originalText;
-                btn.style.background = "#16a34a";
-                btn.disabled = false;
-            }, 2000);
+            isDirty = false;
+            if (!isAuto && btn) {
+                btn.innerHTML = "✅ Saved!";
+                btn.style.background = "#059669";
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.style.background = "#16a34a";
+                    btn.disabled = false;
+                }, 2000);
+            } else {
+                if (saveStatus) {
+                    const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    saveStatus.innerHTML = "Last autosaved at " + time;
+                }
+            }
         } else {
             throw new Error(data.message || 'Saving failed');
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('Error saving changes: ' + error.message);
-        btn.innerHTML = "❌ Error";
-        btn.style.background = "#dc2626";
-        setTimeout(() => {
-            btn.innerHTML = originalText;
-            btn.style.background = "#16a34a";
-            btn.disabled = false;
-        }, 3000);
+        if (!isAuto && btn) {
+            alert('Error saving changes: ' + error.message);
+            btn.innerHTML = "❌ Error";
+            btn.style.background = "#dc2626";
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.style.background = "#16a34a";
+                btn.disabled = false;
+            }, 3000);
+        } else {
+            if (saveStatus) saveStatus.innerHTML = "<span style='color: #ef4444;'>Autosave failed</span>";
+        }
     });
 };
 
-// Update the Ribbon HTML to use the new generic save function
-document.addEventListener("DOMContentLoaded", function() {
-    const saveBtn = document.getElementById('btn-save-case');
-    if (saveBtn) {
-        saveBtn.setAttribute('onclick', 'saveDocumentChanges()');
-        saveBtn.innerHTML = "💾 Save Document";
-    }
-});
+function markDirty() {
+    isDirty = true;
+    const saveStatus = document.getElementById('save-status');
+    if (saveStatus) saveStatus.innerHTML = "<i>Unsaved changes...</i>";
+    
+    // Clear existing timeout
+    if (autoSaveTimeout) clearTimeout(autoSaveTimeout);
+    
+    // Set new timeout for auto-save
+    autoSaveTimeout = setTimeout(() => {
+        if (isDirty) {
+            saveDocumentChanges(true);
+        }
+    }, AUTO_SAVE_DELAY);
+}

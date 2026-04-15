@@ -37,7 +37,7 @@ class ReportController extends Controller
             ->first();
     }
 
-    private function wrapWithBranding($content, $isPdf = false)
+    private function wrapWithBranding($content, $isPdf = false, $month = null, $year = null, $caseId = null)
     {
         $cssPath = public_path('documents/css/editor-style.css');
         $headerPath = public_path('documents/images/header.png');
@@ -69,13 +69,16 @@ class ReportController extends Controller
             'watermark' => $watermarkBase64,
             'isArchive' => true,
             'isPdf' => $isPdf,
+            'month' => $month,
+            'year' => $year,
+            'case_id' => $caseId,
         ])->render();
     }
 
     public function printReport(Report $report)
     {
         // Wrap with branding for high-fidelity browser printing
-        return $this->wrapWithBranding($report->content, true);
+        return $this->wrapWithBranding($report->content, true, $report->month, $report->year);
     }
 
     public function saveContent(\Illuminate\Http\Request $request)
@@ -204,6 +207,6 @@ class ReportController extends Controller
         $html = view($viewPath, compact('settings', 'month', 'year', 'period', 'savedContent', 'cases'))->render();
 
         // Use branding wrapper for templates too
-        return $this->wrapWithBranding($html, true);
+        return $this->wrapWithBranding($html, true, $month, $year);
     }
 }

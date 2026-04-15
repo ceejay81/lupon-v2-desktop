@@ -5,19 +5,19 @@
     @if($currentPangkat)
         <div style="background: var(--bg-hover); padding: 1rem; border-radius: 0.375rem; border: 1px solid var(--border-color); margin-bottom: 1rem;">
             <div style="display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.5rem;">
-                <i class="ph ph-gavel" style="color: var(--primary-color);"></i>
-                <span style="font-weight: 500; font-size: 0.875rem;">Chairperson:</span>
-                <span style="font-size: 0.875rem;">{{ $currentPangkat->chairperson->name }}</span>
+                <i class="ph ph-gavel" style="color: var(--accent-blue);"></i>
+                <span style="font-weight: 500; font-size: 0.875rem; color: var(--text-primary);">Chairperson:</span>
+                <span style="font-size: 0.875rem; color: var(--text-secondary);">{{ $currentPangkat->chairperson->name }}</span>
             </div>
             <div style="display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.5rem;">
-                <i class="ph ph-pencil-simple" style="color: var(--primary-color);"></i>
-                <span style="font-weight: 500; font-size: 0.875rem;">Secretary:</span>
-                <span style="font-size: 0.875rem;">{{ $currentPangkat->secretary->name }}</span>
+                <i class="ph ph-pencil-simple" style="color: var(--accent-blue);"></i>
+                <span style="font-weight: 500; font-size: 0.875rem; color: var(--text-primary);">Secretary:</span>
+                <span style="font-size: 0.875rem; color: var(--text-secondary);">{{ $currentPangkat->secretary->name }}</span>
             </div>
             <div style="display: flex; gap: 0.5rem; align-items: center;">
-                <i class="ph ph-user" style="color: var(--primary-color);"></i>
-                <span style="font-weight: 500; font-size: 0.875rem;">Member:</span>
-                <span style="font-size: 0.875rem;">{{ $currentPangkat->member->name }}</span>
+                <i class="ph ph-user" style="color: var(--accent-blue);"></i>
+                <span style="font-weight: 500; font-size: 0.875rem; color: var(--text-primary);">Member:</span>
+                <span style="font-size: 0.875rem; color: var(--text-secondary);">{{ $currentPangkat->member->name }}</span>
             </div>
             <div style="margin-top: 1rem; font-size: 0.75rem; color: var(--text-muted);">
                 Assigned on {{ $currentPangkat->assigned_at->format('M d, Y') }}
@@ -32,7 +32,7 @@
             <div style="display: flex; flex-direction: column; gap: 1rem; margin-bottom: 1rem;">
                 
                 <div>
-                    <label style="display: block; font-size: 0.875rem; font-weight: 500; margin-bottom: 0.25rem;">Chairperson</label>
+                    <label style="display: block; font-size: 0.875rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.25rem;">Chairperson</label>
                     <select wire:model="chairperson_id" class="form-control" style="width: 100%;">
                         <option value="">-- Select Member --</option>
                         @foreach($availableMembers as $member)
