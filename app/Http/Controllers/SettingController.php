@@ -123,20 +123,8 @@ class SettingController extends Controller
                         }
                     }
 
-                    // Add Branding Images
-                    if (is_dir(public_path('images/branding'))) {
-                        $files = new \RecursiveIteratorIterator(
-                            new \RecursiveDirectoryIterator(public_path('images/branding')),
-                            \RecursiveIteratorIterator::LEAVES_ONLY
-                        );
-                        foreach ($files as $name => $file) {
-                            if (! $file->isDir()) {
-                                $filePath = $file->getRealPath();
-                                $relativePath = 'branding/'.substr($filePath, strlen(public_path('images/branding')) + 1);
-                                $zip->addFile($filePath, $relativePath);
-                            }
-                        }
-                    }
+                    // Note: Branding images are now saved in storage/app/public/branding
+                    // so they are automatically included in the Storage logic above.
 
                     $zip->close();
                 } else {
@@ -232,8 +220,8 @@ class SettingController extends Controller
                             'active' => storage_path('app/public'),
                             'new' => $extractPath.'/storage',
                         ],
-                        'branding' => [
-                            'active' => public_path('images/branding'),
+                        'branding' => [ // Kept for backwards compatibility with legacy backups
+                            'active' => storage_path('app/public/branding'),
                             'new' => $extractPath.'/branding',
                         ],
                     ];
@@ -393,10 +381,16 @@ class SettingController extends Controller
     }
 
     /**
-     * Secretly unlock the branding feature.
+     * Secretly unlock the branding feature with a specific code.
      */
-    public function unlockBranding()
+    public function unlockBranding(Request $request)
     {
+        $code = $request->input('code');
+
+        if (strtoupper($code) !== 'LUPON-PREMIUM-2026') {
+            return redirect()->route('settings.index', ['#maintenance'])->with('error', 'Invalid feature unlock code.');
+        }
+
         \App\Models\Setting::updateOrCreate(
             ['key' => 'is_branding_enabled'],
             ['value' => 'true', 'type' => 'boolean', 'group' => 'branding']
@@ -408,8 +402,26 @@ class SettingController extends Controller
     /**
      * Update the Barangay Logo.
      */
+    /**
+     * Secretly lock the branding feature.
+     */
+    public function lockBranding()
+    {
+        \App\Models\Setting::updateOrCreate(
+            ['key' => 'is_branding_enabled'],
+            ['value' => 'false', 'type' => 'boolean', 'group' => 'branding']
+        );
+
+        return redirect()->route('settings.index')->with('message', 'Premium Branding Features Locked.');
+    }
+
     public function updateBranding(Request $request)
     {
+        // Backend Safety Check
+        if (! \App\Models\Setting::get('is_branding_enabled')) {
+            return redirect()->route('settings.index')->with('error', 'Branding features are currently locked.');
+        }
+
         $request->validate([
             'logo' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
@@ -418,16 +430,16 @@ class SettingController extends Controller
             $file = $request->file('logo');
             $filename = 'barangay_logo_'.time().'.'.$file->getClientOriginalExtension();
 
-            // Ensure the directory exists
-            if (! is_dir(public_path('images/branding'))) {
-                mkdir(public_path('images/branding'), 0755, true);
+            // Ensure the directory exists targeting AppData mapped storage
+            if (! is_dir(storage_path('app/public/branding'))) {
+                mkdir(storage_path('app/public/branding'), 0755, true);
             }
 
-            $file->move(public_path('images/branding'), $filename);
+            $file->move(storage_path('app/public/branding'), $filename);
 
             \App\Models\Setting::updateOrCreate(
                 ['key' => 'barangay_logo_path'],
-                ['value' => 'images/branding/'.$filename, 'type' => 'string', 'group' => 'branding']
+                ['value' => 'media/branding/'.$filename, 'type' => 'string', 'group' => 'branding']
             );
 
             return redirect()->route('settings.index', ['#branding'])->with('message', 'Barangay Logo updated successfully.');

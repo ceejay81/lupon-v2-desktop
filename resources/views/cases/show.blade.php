@@ -20,7 +20,11 @@
                     <i class="ph ph-caret-right"></i>
                     <span>{{ $case->case_number }}</span>
                 </div>
-                <h1 class="case-title">{{ $case->complainant }} vs {{ $case->respondent }}</h1>
+                <h1 class="case-title">
+                    {{ $case->complainants->pluck('name')->join(', ') ?: $case->complainant }} 
+                    vs 
+                    {{ $case->respondents->pluck('name')->join(', ') ?: $case->respondent }}
+                </h1>
                 <div class="case-meta">
                     <span class="case-number">{{ $case->case_number }}</span>
                     <span class="case-separator">•</span>
@@ -33,11 +37,24 @@
         
         <div class="case-header-right">
             <div class="case-status-section">
-                <span class="status-badge {{ $case->status_badge_class }}">
-                    {{ $case->status_label }}
-                </span>
+                <form action="{{ route('cases.update-status', $case) }}" method="POST" style="margin:0;">
+                    @csrf
+                    <div style="position: relative; display: inline-block;">
+                        <select name="status" onchange="this.form.submit()" class="status-badge {{ $case->status_badge_class }}" style="border: none; cursor: pointer; outline: none; appearance: none; padding-right: 1.5rem; font-family: inherit; font-size: inherit; font-weight: inherit; text-transform: inherit;">
+                            <option value="filed" {{ $case->status == 'filed' ? 'selected' : '' }} style="color: #000; background: #fff;">Filed</option>
+                            <option value="under_mediation" {{ $case->status == 'under_mediation' ? 'selected' : '' }} style="color: #000; background: #fff;">Mediation</option>
+                            <option value="under_conciliation" {{ $case->status == 'under_conciliation' ? 'selected' : '' }} style="color: #000; background: #fff;">Conciliation</option>
+                            <option value="under_arbitration" {{ $case->status == 'under_arbitration' ? 'selected' : '' }} style="color: #000; background: #fff;">Arbitration</option>
+                            <option value="settled" {{ $case->status == 'settled' ? 'selected' : '' }} style="color: #000; background: #fff;">Settled</option>
+                            <option value="certified_to_court" {{ $case->status == 'certified_to_court' ? 'selected' : '' }} style="color: #000; background: #fff;">Certified to Court</option>
+                            <option value="dismissed" {{ $case->status == 'dismissed' ? 'selected' : '' }} style="color: #000; background: #fff;">Dismissed</option>
+                            <option value="archived" {{ $case->status == 'archived' ? 'selected' : '' }} style="color: #000; background: #fff;">Archived</option>
+                        </select>
+                        <i class="ph ph-caret-down" style="position: absolute; right: 0.5rem; top: 50%; transform: translateY(-50%); font-size: 0.85rem; pointer-events: none; opacity: 0.8;"></i>
+                    </div>
+                </form>
             </div>
-            <div class="case-actions-header">
+            <div class="case-actions-header" style="display: flex; gap: 0.5rem; align-items: center;">
                 <button onclick="Livewire.dispatch('openHearingForm', { caseId: {{ $case->id }} })" class="btn-action btn-primary">
                     <i class="ph ph-calendar-plus"></i>
                     Schedule Hearing
@@ -46,6 +63,13 @@
                     <i class="ph ph-pencil"></i>
                     Edit Case
                 </a>
+                <form action="{{ route('cases.destroy', $case) }}" method="POST" onsubmit="return confirm('WARNING: Are you sure you want to permanently delete this case? This action cannot be undone and will remove it from all records.')" style="margin:0;">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn-action" style="background: var(--danger); color: white; border: none; cursor: pointer; padding: 0.5rem 1rem; border-radius: var(--radius-md); font-weight: 600; display: inline-flex; align-items: center; gap: 0.35rem; transition: background 0.2s;" onmouseover="this.style.background='#b91c1c'" onmouseout="this.style.background='var(--danger)'">
+                        <i class="ph ph-trash"></i> Delete Case
+                    </button>
+                </form>
             </div>
         </div>
     </div>
@@ -209,29 +233,55 @@
                     <h3><i class="ph ph-users"></i> Parties</h3>
                 </div>
                 <div class="sidebar-card-body">
-                    <div class="party-section">
-                        <div class="party-label">Complainant</div>
-                        <div class="party-name">{{ $case->complainant }}</div>
-                        @if($case->complainant_address)
-                            <div class="party-address">{{ $case->complainant_address }}</div>
-                        @endif
-                        @if($case->complainant_phone)
-                            <div class="party-phone">{{ $case->complainant_phone }}</div>
-                        @endif
-                    </div>
+                    @forelse($case->complainants as $index => $complainant)
+                        <div class="party-section">
+                            <div class="party-label">Complainant {{ count($case->complainants) > 1 ? ($index + 1) : '' }}</div>
+                            <div class="party-name">{{ $complainant->name }}</div>
+                            @if($complainant->address)
+                                <div class="party-address">{{ $complainant->address }}</div>
+                            @endif
+                            @if($complainant->phone)
+                                <div class="party-phone">{{ $complainant->phone }}</div>
+                            @endif
+                        </div>
+                    @empty
+                        <div class="party-section">
+                            <div class="party-label">Complainant</div>
+                            <div class="party-name">{{ $case->complainant }}</div>
+                            @if($case->complainant_address)
+                                <div class="party-address">{{ $case->complainant_address }}</div>
+                            @endif
+                            @if($case->complainant_phone)
+                                <div class="party-phone">{{ $case->complainant_phone }}</div>
+                            @endif
+                        </div>
+                    @endforelse
                     
                     <div class="party-divider"></div>
                     
-                    <div class="party-section">
-                        <div class="party-label">Respondent</div>
-                        <div class="party-name">{{ $case->respondent }}</div>
-                        @if($case->respondent_address)
-                            <div class="party-address">{{ $case->respondent_address }}</div>
-                        @endif
-                        @if($case->respondent_phone)
-                            <div class="party-phone">{{ $case->respondent_phone }}</div>
-                        @endif
-                    </div>
+                    @forelse($case->respondents as $index => $respondent)
+                        <div class="party-section">
+                            <div class="party-label">Respondent {{ count($case->respondents) > 1 ? ($index + 1) : '' }}</div>
+                            <div class="party-name">{{ $respondent->name }}</div>
+                            @if($respondent->address)
+                                <div class="party-address">{{ $respondent->address }}</div>
+                            @endif
+                            @if($respondent->phone)
+                                <div class="party-phone">{{ $respondent->phone }}</div>
+                            @endif
+                        </div>
+                    @empty
+                        <div class="party-section">
+                            <div class="party-label">Respondent</div>
+                            <div class="party-name">{{ $case->respondent }}</div>
+                            @if($case->respondent_address)
+                                <div class="party-address">{{ $case->respondent_address }}</div>
+                            @endif
+                            @if($case->respondent_phone)
+                                <div class="party-phone">{{ $case->respondent_phone }}</div>
+                            @endif
+                        </div>
+                    @endforelse
                 </div>
             </div>
 

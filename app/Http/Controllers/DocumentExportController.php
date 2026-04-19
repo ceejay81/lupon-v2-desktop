@@ -10,8 +10,8 @@ class DocumentExportController extends Controller
     private function caseWithData(int $id): LuponCase
     {
         return LuponCase::with([
-            'complainantCitizen',
-            'respondentCitizen',
+            'complainants',
+            'respondents',
             'pangkats.chairperson',
             'pangkats.secretary',
             'pangkats.member',
@@ -124,7 +124,7 @@ class DocumentExportController extends Controller
     {
         $case = $this->caseWithData($caseId);
         $settings = $this->settings();
-        $savedContent = $this->getDocumentContent($caseId, 'Endorsement Letter');
+        $savedContent = $this->getDocumentContent($caseId, 'endorsement');
 
         return view('documents.endorsement', compact('case', 'settings', 'savedContent'));
     }

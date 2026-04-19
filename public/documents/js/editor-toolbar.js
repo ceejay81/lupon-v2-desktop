@@ -81,6 +81,7 @@ document.addEventListener("DOMContentLoaded", function() {
         <!-- Insert / Document Group -->
         <div class="ribbon-group">
             <div class="group-content">
+                ${window.BRANDING_UNLOCKED ? `
                 <div class="upload-btn-wrapper" title="Change Header Image">
                     <button>🖼 Header</button>
                     <input type="file" onchange="previewImage(this, 'header-img')" accept="image/*" />
@@ -89,6 +90,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     <button>💧 Watermark</button>
                     <input type="file" onchange="previewImage(this, 'watermark-img')" accept="image/*" />
                 </div>
+                ` : ''}
             </div>
             <div class="group-content" style="margin-top: 4px; justify-content: center;">
                 <button onclick="cmd('undo')" title="Undo (Ctrl+Z)">&#8630;</button>

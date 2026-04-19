@@ -11,16 +11,26 @@ class Citizen extends Model
 
     protected $guarded = [];
 
-    /** Cases where this citizen is the complainant. */
-    public function casesAsComplainant(): \Illuminate\Database\Eloquent\Relations\HasMany
+    /** Alias for name for template compatibility. */
+    public function getFullNameAttribute(): string
     {
-        return $this->hasMany(LuponCase::class, 'complainant_id');
+        return $this->name;
+    }
+
+    /** Cases where this citizen is the complainant. */
+    public function casesAsComplainant(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(LuponCase::class, 'case_citizens')
+            ->wherePivot('role', 'complainant')
+            ->withTimestamps();
     }
 
     /** Cases where this citizen is the respondent. */
-    public function casesAsRespondent(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function casesAsRespondent(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
-        return $this->hasMany(LuponCase::class, 'respondent_id');
+        return $this->belongsToMany(LuponCase::class, 'case_citizens')
+            ->wherePivot('role', 'respondent')
+            ->withTimestamps();
     }
 
     /** All cases this citizen is involved in (either side). */

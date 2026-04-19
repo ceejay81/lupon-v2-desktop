@@ -73,7 +73,6 @@ class HearingCalendar extends Component
     }
 
     #[On('hearingSaved')]
-    #[On('hearingStatusUpdated')]
     public function refreshEvents(): void
     {
         $this->dispatch('calendarRefresh', events: $this->events);

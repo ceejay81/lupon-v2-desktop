@@ -14,13 +14,9 @@
 <body>
     <div class="login-container">
         <!-- Left Panel — Filipino Banig Pattern with Framed Illustration -->
-        <div class="login-left">
-            <div class="login-left-content">
-                <!-- Framed illustration with warm tan textured border -->
-                <div class="login-illustration-frame">
-                    <img src="{{ asset('images/luponloginlogo.png') }}" alt="Lupon Illustration" class="login-illustration-image">
-                </div>
-            </div>
+        <!-- Left Panel — Fullscreen Illustration -->
+        <div class="login-left" style="background-image: url('{{ asset('images/luponloginlogo.jpg') }}');">
+            {{-- Content removed to allow background to be fullscreen hero --}}
         </div>
 
         <!-- Right Panel — Login Form -->
@@ -28,7 +24,10 @@
             <div class="login-form-wrapper">
                 <!-- Logo Section -->
                 <div class="login-logo">
-                    <img src="{{ asset('images/bulalogo.png') }}" alt="Bula Logo" class="login-logo-image">
+                    <div class="login-logo-group">
+                        <img src="{{ asset('images/bulalogo.png') }}" alt="Bula Logo" class="login-logo-image">
+                        <img src="{{ asset('images/luponlogo2.png') }}" alt="Lupon Logo" class="login-logo-image lupon-logo">
+                    </div>
                     <h2 class="login-logo-title">Lupon</h2>
                     <p class="login-logo-subtitle">Barangay Bula Justice System</p>
                 </div>
@@ -40,7 +39,8 @@
 
                 {{-- Status / Success Messages --}}
                 @if(session('status'))
-                    <div class="login-error" style="background-color: var(--success-light); color: var(--success); border-color: rgba(34,197,94,0.2);">
+                    <div class="login-error"
+                        style="background-color: var(--success-light); color: var(--success); border-color: rgba(34,197,94,0.2);">
                         <i class="ph ph-check-circle"></i> {{ session('status') }}
                     </div>
                 @endif
@@ -58,8 +58,8 @@
 
                     <!-- Email Field -->
                     <div class="form-group">
-                        <input type="email" id="email" name="email" class="form-input"
-                            placeholder="Email address" value="{{ old('email') }}" autofocus autocomplete="email">
+                        <input type="email" id="email" name="email" class="form-input" placeholder="Email address"
+                            value="{{ old('email') }}" autofocus autocomplete="email">
                         <label for="email" class="form-label">Email address</label>
                     </div>
 
@@ -69,7 +69,8 @@
                             <input type="password" id="password" name="password" class="form-input"
                                 placeholder="Password" autocomplete="current-password">
                             <label for="password" class="form-label">Password</label>
-                            <button type="button" class="password-toggle" onclick="togglePassword()" aria-label="Toggle password visibility">
+                            <button type="button" class="password-toggle" onclick="togglePassword()"
+                                aria-label="Toggle password visibility">
                                 <i class="ph ph-eye" id="toggleIcon"></i>
                             </button>
                         </div>

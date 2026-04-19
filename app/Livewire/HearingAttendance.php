@@ -140,7 +140,6 @@ class HearingAttendance extends Component
             );
         }
 
-        $this->dispatch('hearingStatusUpdated');
         $this->dispatch('hearingSaved'); // refresh calendar
         $this->dispatch('toast', type: 'success', message: 'Hearing record updated successfully.');
     }

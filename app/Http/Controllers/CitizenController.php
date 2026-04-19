@@ -75,7 +75,14 @@ class CitizenController extends Controller
 
     public function destroy(Citizen $citizen): \Illuminate\Http\RedirectResponse
     {
-        // Citizens cannot be deleted — edit to correct mistakes
-        return redirect()->route('citizens.show', $citizen);
+        // The user explicitly requested a permanent deletion
+        if (method_exists($citizen, 'forceDelete')) {
+            $citizen->forceDelete();
+        } else {
+            $citizen->delete();
+        }
+
+        return redirect()->route('citizens.index')
+            ->with('message', 'Citizen permanently deleted.');
     }
 }

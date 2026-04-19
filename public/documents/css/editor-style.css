@@ -324,6 +324,31 @@
     background: transparent !important;
 }
 
+/* Multi-Page Printing Logic */
+@media print {
+    /* Ensure table rows don't break mid-row */
+    tr {
+        page-break-inside: avoid;
+        break-inside: avoid;
+    }
+    
+    /* Ensure signatures stay together */
+    .signature-grid, .signature-block, .cc-block, .sender-block {
+        page-break-inside: avoid;
+        break-inside: avoid;
+    }
+
+    /* Force Table Headers to repeat on every sheet */
+    thead {
+        display: table-header-group;
+    }
+
+    #doc-body {
+        margin-top: 1.8in !important;
+        padding-bottom: 0.5in !important; /* Safety buffer at the bottom of the last page */
+    }
+}
+
 #doc-body:focus {
     outline: none;
 }

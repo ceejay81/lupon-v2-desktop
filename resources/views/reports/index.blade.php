@@ -39,12 +39,12 @@
             </div>
 
             <div class="card" style="padding: 1.5rem; display: flex; align-items: center; gap: 1rem;">
-                <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(99, 102, 241, 0.1); color: #6366f1; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
-                    <i class="ph ph-chart-pie"></i>
+                <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(239, 68, 68, 0.1); color: #ef4444; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+                    <i class="ph ph-certificate"></i>
                 </div>
                 <div>
-                    <h3 style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Success Rate</h3>
-                    <p style="font-size: 1.5rem; font-weight: 700; color: var(--text-primary); margin: 0;">{{ $settlementRate }}%</p>
+                    <h3 style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">CFA Issued</h3>
+                    <p style="font-size: 1.5rem; font-weight: 700; color: var(--text-primary); margin: 0;">{{ $cfaCases }}</p>
                 </div>
             </div>
         </div>
@@ -87,13 +87,13 @@
                         </div>
                     </div>
 
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-top: 1rem;">
                         <button type="button" 
                                 onclick="generatePreview('kp-form-28')" 
                                 class="btn" 
                                 style="background: var(--bg-card); border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; gap: 0.5rem; height: 48px; border-radius: 12px; font-weight: 500; transition: all 0.2s;">
                             <i class="ph ph-eye" style="color: var(--primary-color);"></i>
-                            Preview Transmittal Report
+                            Preview Transmittal
                         </button>
                         
                         <button type="button" 
@@ -101,7 +101,15 @@
                                 class="btn" 
                                 style="background: var(--bg-card); border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; gap: 0.5rem; height: 48px; border-radius: 12px; font-weight: 500; transition: all 0.2s;">
                             <i class="ph ph-eye" style="color: var(--primary-color);"></i>
-                            Preview Endorsement Letter
+                            Preview Endorsement
+                        </button>
+
+                        <button type="button" 
+                                onclick="generatePreview('cfa-cases')" 
+                                class="btn" 
+                                style="background: var(--bg-card); border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; gap: 0.5rem; height: 48px; border-radius: 12px; font-weight: 500; transition: all 0.2s;">
+                            <i class="ph ph-eye" style="color: var(--danger);"></i>
+                            Preview CFA Cases
                         </button>
                     </div>
                 </form>
@@ -128,85 +136,6 @@
                 </div>
             </div>
 
-            <!-- Reporting Activity -->
-            <div class="card" style="padding: 1.5rem;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                    <h3 style="font-size: 1.125rem; font-weight: 700;">Reporting Activity & History</h3>
-                    <a href="{{ route('folderized-reports.index') }}" style="font-size: 0.875rem; color: var(--primary-color); text-decoration: none; font-weight: 600;">View Filing Cabinet →</a>
-                </div>
-                
-                <div style="overflow-x: auto;">
-                    <table style="width: 100%; border-collapse: collapse;">
-                        <thead>
-                            <tr style="text-align: left; border-bottom: 1px solid var(--border-color);">
-                                <th style="padding: 1rem 0; font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600;">Period</th>
-                                <th style="padding: 1rem 0; font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600;">Document Type</th>
-                                <th style="padding: 1rem 0; font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600;">Status</th>
-                                <th style="padding: 1rem 0; font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600;">Last Modified</th>
-                                <th style="padding: 1rem 0; font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600; text-align: right;">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($recentReports as $report)
-                                <tr style="border-bottom: 1px solid var(--border-color); transition: background 0.2s;">
-                                    <td style="padding: 1rem 0;">
-                                        <span style="font-weight: 600; color: var(--text-primary);">{{ \Carbon\Carbon::create($report->year, $report->month, 1)->format('M Y') }}</span>
-                                    </td>
-                                    <td style="padding: 1rem 0;">
-                                        <span style="font-size: 0.875rem; color: var(--text-muted);">{{ $report->type }}</span>
-                                    </td>
-                                    <td style="padding: 1rem 0;">
-                                        @if($report->status === 'finalized')
-                                            <span style="display: inline-flex; align-items: center; gap: 0.375rem; padding: 0.25rem 0.625rem; border-radius: 9999px; background: rgba(16, 185, 129, 0.1); color: #059669; font-size: 0.75rem; font-weight: 600;">
-                                                <i class="ph-fill ph-check-circle"></i> Archived
-                                            </span>
-                                        @else
-                                            <span style="display: inline-flex; align-items: center; gap: 0.375rem; padding: 0.25rem 0.625rem; border-radius: 9999px; background: rgba(245, 158, 11, 0.1); color: #d97706; font-size: 0.75rem; font-weight: 600;">
-                                                <i class="ph-fill ph-pencil-circle"></i> Draft
-                                            </span>
-                                        @endif
-                                    </td>
-                                    <td style="padding: 1rem 0; font-size: 0.875rem; color: var(--text-muted);">
-                                        {{ $report->updated_at->diffForHumans() }}
-                                    </td>
-                                    <td style="padding: 1rem 0; text-align: right;">
-                                        <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
-                                            @if($report->status === 'finalized')
-                                                <!-- Archived Action: View Snapshot -->
-                                                <a href="{{ route('reports.show', $report->type) }}?month={{ $report->month }}&year={{ $report->year }}" 
-                                                   title="View Interactive Snapshot" 
-                                                   style="display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 8px; color: var(--primary-color); background: rgba(59, 130, 246, 0.1); transition: all 0.2s;">
-                                                    <i class="ph ph-eye"></i>
-                                                </a>
-                                                
-                                                <!-- Print Official Report Action -->
-                                                <a href="{{ route('reports.print', $report->id) }}?print=1" 
-                                                   title="Print Official Report (High Fidelity)" 
-                                                   style="display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 8px; color: #10b981; background: rgba(16, 185, 129, 0.1); transition: all 0.2s;">
-                                                    <i class="ph ph-printer"></i>
-                                                </a>
-                                            @else
-                                                <!-- Draft Action: Edit Draft -->
-                                                <a href="{{ route('reports.show', $report->type) }}?month={{ $report->month }}&year={{ $report->year }}" 
-                                                   title="Edit/Manage Draft" 
-                                                   style="display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 8px; color: #f59e0b; background: rgba(245, 158, 11, 0.1); transition: all 0.2s;">
-                                                    <i class="ph ph-pencil-simple"></i>
-                                                </a>
-                                            @endif
-                                        </div>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="5" style="padding: 3rem 0; text-align: center; color: var(--text-muted); font-style: italic;">
-                                        No recent reporting activity recorded.
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-            </div>
 
         </div>
     </div>
@@ -215,7 +144,7 @@
         function generatePreview(type) {
             const month = document.getElementById('report_month').value;
             const year = document.getElementById('report_year').value;
-            window.open(`{{ url('reports') }}/${type}?month=${month}&year=${year}`, '_blank');
+            window.location.href = `{{ url('reports') }}/${type}?month=${month}&year=${year}`;
         }
     </script>
 @endsection

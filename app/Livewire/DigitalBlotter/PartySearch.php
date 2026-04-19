@@ -10,6 +10,9 @@ class PartySearch extends Component
     /** 'complainant' or 'respondent' */
     public string $partyType = 'complainant';
 
+    /** Index for array mapping */
+    public int $index = 0;
+
     public string $search = '';
 
     /** @var array<int, array{id: int, name: string, address: string, phone: string, purok: string}> */
@@ -19,10 +22,14 @@ class PartySearch extends Component
 
     /** Inline create form */
     public bool $showCreateForm = false;
-    public string $newName    = '';
+
+    public string $newName = '';
+
     public string $newAddress = '';
-    public string $newPhone   = '';
-    public string $newPurok   = '';
+
+    public string $newPhone = '';
+
+    public string $newPurok = '';
 
     public function updatedSearch(): void
     {
@@ -30,7 +37,7 @@ class PartySearch extends Component
         $query = trim($this->search);
 
         if (strlen($query) < 2) {
-            $this->results      = [];
+            $this->results = [];
             $this->showDropdown = false;
 
             return;
@@ -41,11 +48,11 @@ class PartySearch extends Component
             ->limit(8)
             ->get(['id', 'name', 'address', 'phone', 'purok'])
             ->map(fn ($c) => [
-                'id'      => $c->id,
-                'name'    => $c->name,
+                'id' => $c->id,
+                'name' => $c->name,
                 'address' => $c->address ?? '',
-                'phone'   => $c->phone ?? '',
-                'purok'   => $c->purok ?? '',
+                'phone' => $c->phone ?? '',
+                'purok' => $c->purok ?? '',
             ])
             ->all();
 
@@ -60,56 +67,56 @@ class PartySearch extends Component
             return;
         }
 
-        $this->dispatch("partySelected.{$this->partyType}", party: $citizen);
+        $this->dispatch("partySelected.{$this->partyType}", party: $citizen, index: $this->index);
 
-        $this->search         = $citizen['name'];
-        $this->results        = [];
-        $this->showDropdown   = false;
+        $this->search = $citizen['name'];
+        $this->results = [];
+        $this->showDropdown = false;
         $this->showCreateForm = false;
     }
 
     public function openCreateForm(): void
     {
-        $this->showDropdown   = false;
+        $this->showDropdown = false;
         $this->showCreateForm = true;
-        $this->newName        = $this->search;
-        $this->newAddress     = '';
-        $this->newPhone       = '';
-        $this->newPurok       = '';
+        $this->newName = $this->search;
+        $this->newAddress = '';
+        $this->newPhone = '';
+        $this->newPurok = '';
     }
 
     public function createCitizen(): void
     {
         $this->validate([
-            'newName'    => 'required|string|max:255',
+            'newName' => 'required|string|max:255',
             'newAddress' => 'nullable|string|max:500',
-            'newPhone'   => 'nullable|string|max:11',
-            'newPurok'   => 'nullable|string|max:100',
+            'newPhone' => 'nullable|string|max:11',
+            'newPurok' => 'nullable|string|max:100',
         ]);
 
         $citizen = Citizen::create([
-            'name'    => trim($this->newName),
+            'name' => trim($this->newName),
             'address' => trim($this->newAddress) ?: null,
-            'phone'   => trim($this->newPhone) ?: null,
-            'purok'   => trim($this->newPurok) ?: null,
+            'phone' => trim($this->newPhone) ?: null,
+            'purok' => trim($this->newPurok) ?: null,
         ]);
 
         $party = [
-            'id'      => $citizen->id,
-            'name'    => $citizen->name,
+            'id' => $citizen->id,
+            'name' => $citizen->name,
             'address' => $citizen->address ?? '',
-            'phone'   => $citizen->phone ?? '',
-            'purok'   => $citizen->purok ?? '',
+            'phone' => $citizen->phone ?? '',
+            'purok' => $citizen->purok ?? '',
         ];
 
-        $this->dispatch("partySelected.{$this->partyType}", party: $party);
+        $this->dispatch("partySelected.{$this->partyType}", party: $party, index: $this->index);
 
-        $this->search         = $citizen->name;
+        $this->search = $citizen->name;
         $this->showCreateForm = false;
-        $this->newName        = '';
-        $this->newAddress     = '';
-        $this->newPhone       = '';
-        $this->newPurok       = '';
+        $this->newName = '';
+        $this->newAddress = '';
+        $this->newPhone = '';
+        $this->newPurok = '';
     }
 
     public function cancelCreate(): void

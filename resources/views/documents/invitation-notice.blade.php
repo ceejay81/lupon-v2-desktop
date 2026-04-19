@@ -1,14 +1,15 @@
 @extends('documents.layout')
 
 @section('doc-title', 'INVITATION NOTICE')
+@section('doc-type', 'Invitation Notice')
 
 @section('content')
 <div style="font-family: Calibri, sans-serif; font-size: 12pt;">
     <p style="line-height: 1.15; text-align: right; margin-bottom: 0.1in; font-weight: bold;">{{ date('F j, Y') }}</p>
     
     <div style="line-height: 1.15; text-align: left; margin-bottom: 0.1in; font-weight: bold;">
-        <p style="margin: 0;"><span class="doc-field doc-field-medium" data-field="respondent">{{ strtoupper($case->respondentCitizen->full_name ?? $case->respondent ?? '') }}</span></p>
-        <p style="margin: 0;"><span class="doc-field doc-field-long" data-field="respondent_address">{{ $case->respondentCitizen->address ?? '' }}</span></p>
+        <p style="margin: 0;"><span class="doc-field doc-field-medium" data-field="respondent">{{ strtoupper($case->respondents->pluck('name')->join(', ') ?: $case->respondent ?? '') }}</span></p>
+        <p style="margin: 0;"><span class="doc-field doc-field-long" data-field="respondent_address">{{ $case->respondents->first()->address ?? $case->respondent_address ?? '' }}</span></p>
         <p style="margin: 0;">{{ $settings['city_name'] ?? 'General Santos City' }}</p>
     </div>
 
@@ -16,8 +17,8 @@
 
     <p style="line-height: 1.15; text-align: justify; margin-bottom: 0.1in; text-indent: 0.5in;">
         May we respectfully invite your good presence of which you are principally concern for a dialogue relative to the complaint being brought to the office by 
-        <span class="doc-field doc-field-medium" data-field="complainant">{{ $case->complainantCitizen->full_name ?? $case->complainant ?? '' }}</span>, 
-        <span class="doc-field doc-field-long" data-field="complainant_address">{{ $case->complainantCitizen->address ?? '' }}</span> 
+        <span class="doc-field doc-field-medium" data-field="complainant">{{ $case->complainants->pluck('name')->join(', ') ?: $case->complainant ?? '' }}</span>, 
+        <span class="doc-field doc-field-long" data-field="complainant_address">{{ $case->complainants->first()->address ?? $case->complainant_address ?? '' }}</span> 
         on <span class="doc-field doc-field-medium"></span> <i>at <span class="doc-field-short doc-field"></span> in the <span class="doc-field doc-field-short"></span></i> at the Barangay {{ $settings['barangay_name'] ?? 'Bula' }} Office.
     </p>
 

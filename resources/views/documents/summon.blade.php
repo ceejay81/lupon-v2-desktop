@@ -1,6 +1,7 @@
 @extends('documents.layout')
 
 @section('doc-title', 'SUMMONS')
+@section('doc-type', 'Summons (KP Form 9)')
 
 @section('content')
 <!-- Top Info Grid -->
@@ -10,14 +11,14 @@
         <br>
         <p style="margin: 0; line-height: 1.4;">{{ $settings['city_name'] ?? 'General Santos City' }}</p>
         <p style="margin: 0; line-height: 1.4; overflow: hidden; white-space: nowrap;">========================</p>
-        <p style="margin: 0; font-weight: bold; line-height: 1.4;"><span class="doc-field doc-field-medium" data-field="complainant">{{ strtoupper($case->complainantCitizen->full_name ?? $case->complainant ?? '') }}</span></p>
+        <p style="margin: 0; font-weight: bold; line-height: 1.4;"><span class="doc-field doc-field-medium" data-field="complainant">{{ strtoupper($case->complainants->pluck('name')->join(', ') ?: $case->complainant ?? '') }}</span></p>
         <p style="margin: 0; font-weight: bold; line-height: 1.4; text-indent: 0.28in;">-Against-</p>
         <br>
         <p style="margin: 0; font-weight: bold; line-height: 1.4; border-bottom: 1px solid black;">&nbsp;</p>
         <br>
         <p style="margin: 0; line-height: 1.4;">{{ $settings['city_name'] ?? 'General Santos City' }}</p>
         <p style="margin: 0; line-height: 1.4; overflow: hidden; white-space: nowrap;">========================</p>
-        <p style="margin: 0; font-weight: bold; line-height: 1.4;"><span class="doc-field doc-field-medium" data-field="respondent">{{ strtoupper($case->respondentCitizen->full_name ?? $case->respondent ?? '') }}</span></p>
+        <p style="margin: 0; font-weight: bold; line-height: 1.4;"><span class="doc-field doc-field-medium" data-field="respondent">{{ strtoupper($case->respondents->pluck('name')->join(', ') ?: $case->respondent ?? '') }}</span></p>
         <p style="margin: 0; font-weight: bold; line-height: 1.4;">Respondent/S</p>
     </div>
 
@@ -42,8 +43,9 @@
         <div style="display: flex; align-items: flex-start; margin-top: 10px; width: 100%;">
             <span style="font-weight: bold; width: 40px; margin-top: 2px;">TO:</span>
             <div style="display: flex; flex-direction: column; gap: 5px; flex: 1;">
-                <span class="doc-field doc-field-long" data-field="respondent">{{ strtoupper($case->respondentCitizen->full_name ?? $case->respondent ?? '') }}</span>
-                <span class="doc-field doc-field-long" data-field="respondent_address">{{ $case->respondentStatus->address ?? $case->respondentCitizen->address ?? '' }}</span>
+               <div class="field-item"><span class="doc-field doc-field-medium" data-field="respondent">{{ $case->respondents->pluck('name')->join(', ') ?: $case->respondent ?: '____________________' }}</span></div>
+               <div class="field-label">Respondent/s</div>
+               <span class="doc-field doc-field-long" data-field="respondent_address">{{ $case->respondentStatus->address ?? $case->respondents->first()->address ?? $case->respondent_address ?? '' }}</span>
                 <span class="doc-field doc-field-long">{{ $settings['city_name'] ?? 'General Santos City' }}</span>
             </div>
         </div>
@@ -84,7 +86,7 @@
     <p style="text-align: center; font-weight: bold; font-size: 12pt; margin-bottom: 10px;">OFFICER'S RETURN</p>
 
     <p style="margin-bottom: 10px; line-height: 1.8; text-indent: 0;">I served this summon upon
-       <span class="doc-field doc-field-long">{{ strtoupper($case->respondentCitizen->full_name ?? $case->respondent ?? '') }}</span>
+       <span class="doc-field doc-field-long">{{ strtoupper($case->respondents->pluck('name')->join(', ') ?: $case->respondent ?? '') }}</span>
        on the <span class="doc-field doc-field-short">{{ date('d') }}</span>
        day of <span class="doc-field doc-field-medium">{{ date('F') }}</span>,
        <b>20</b><span class="doc-field" style="min-width: 25px;">{{ date('y') }}</span> by:</p>

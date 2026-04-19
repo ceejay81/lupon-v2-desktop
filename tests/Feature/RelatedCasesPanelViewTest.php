@@ -18,10 +18,9 @@ class RelatedCasesPanelViewTest extends TestCase
         $citizen = Citizen::factory()->create();
 
         $case = LuponCase::factory()->create([
-            'complainant_id' => $citizen->id,
-            'respondent_id' => null,
             'status' => 'filed',
         ]);
+        $case->complainants()->attach($citizen->id, ['role' => 'complainant']);
 
         $response = $this->actingAs($user)->get(route('cases.show', $case));
 
@@ -34,8 +33,6 @@ class RelatedCasesPanelViewTest extends TestCase
         $user = User::factory()->create();
 
         $case = LuponCase::factory()->create([
-            'complainant_id' => null,
-            'respondent_id' => null,
             'status' => 'filed',
         ]);
 
@@ -51,22 +48,19 @@ class RelatedCasesPanelViewTest extends TestCase
         $citizen = Citizen::factory()->create();
 
         $case = LuponCase::factory()->create([
-            'complainant_id' => $citizen->id,
-            'respondent_id' => null,
             'status' => 'filed',
         ]);
+        $case->complainants()->attach($citizen->id, ['role' => 'complainant']);
 
         $relatedCase1 = LuponCase::factory()->create([
-            'complainant_id' => $citizen->id,
-            'respondent_id' => null,
             'status' => 'filed',
         ]);
+        $relatedCase1->complainants()->attach($citizen->id, ['role' => 'complainant']);
 
         $relatedCase2 = LuponCase::factory()->create([
-            'complainant_id' => $citizen->id,
-            'respondent_id' => null,
             'status' => 'under_mediation',
         ]);
+        $relatedCase2->complainants()->attach($citizen->id, ['role' => 'complainant']);
 
         $response = $this->actingAs($user)->get(route('cases.show', $case));
 

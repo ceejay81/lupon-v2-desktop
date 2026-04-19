@@ -16,56 +16,80 @@
             <div class="form-row">
                 {{-- Complainant --}}
                 <div class="form-section">
-                    <h3 class="section-title">COMPLAINANT DETAILS</h3>
-                    <div class="form-group">
-                        <label>Search Past Records</label>
-                        @livewire('digital-blotter.party-search', ['partyType' => 'complainant'], 'complainant-search')
-                        <small class="text-muted">Select to auto-fill, or type a new name below.</small>
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--gray-100, #f3f4f6); margin-bottom: 20px; padding-bottom: 8px;">
+                        <h3 class="section-title" style="border: none; margin: 0; padding: 0;">COMPLAINANT DETAILS</h3>
+                        <button type="button" wire:click="addComplainant" class="btn" style="background: rgba(59, 130, 246, 0.1); color: #3b82f6; border: none; font-size: 0.75rem; padding: 6px 12px; border-radius: 99px; cursor: pointer; font-weight: 600;">+ Add Another</button>
                     </div>
-                    <div class="form-columns">
+
+                    @foreach($complainants as $index => $comp)
+                    <div style="background: var(--gray-50, #f9fafb); padding: 16px; border-radius: 8px; margin-bottom: 16px; border: 1px solid var(--gray-200, #e5e7eb); position: relative;">
+                        @if(count($complainants) > 1)
+                            <button type="button" wire:click="removeComplainant({{ $index }})" style="position: absolute; right: -8px; top: -8px; background: #ef4444; color: white; border: none; width: 24px; height: 24px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);"><i class="ph ph-x"></i></button>
+                        @endif
+
                         <div class="form-group">
-                            <label for="complainant">Full Name <span style="color: var(--danger, #ef4444);">*</span></label>
-                            <input wire:model="complainant" type="text" id="complainant" placeholder="e.g. Juan Dela Cruz">
-                            @error('complainant') <p class="error"><i class="ph ph-warning-circle"></i> {{ $message }}</p> @enderror
+                            <label>Search Past Records</label>
+                            @livewire('digital-blotter.party-search', ['partyType' => 'complainant', 'index' => $index], key('comp-edit-'.$index))
+                            <small class="text-muted">Select to auto-fill, or type a new name below.</small>
                         </div>
-                        <div class="form-group">
-                            <label for="complainant_phone">Contact Number</label>
-                            <input wire:model="complainant_phone" type="tel" id="complainant_phone" maxlength="11" placeholder="e.g. 09XX XXX XXXX">
-                            @error('complainant_phone') <p class="error"><i class="ph ph-warning-circle"></i> {{ $message }}</p> @enderror
+                        <div class="form-columns">
+                            <div class="form-group">
+                                <label for="complainants.{{ $index }}.name">Full Name <span style="color: var(--danger, #ef4444);">*</span></label>
+                                <input wire:model="complainants.{{ $index }}.name" type="text" id="complainants.{{ $index }}.name" placeholder="e.g. Juan Dela Cruz">
+                                @error('complainants.'.$index.'.name') <p class="error"><i class="ph ph-warning-circle"></i> {{ $message }}</p> @enderror
+                            </div>
+                            <div class="form-group">
+                                <label for="complainants.{{ $index }}.phone">Contact Number</label>
+                                <input wire:model="complainants.{{ $index }}.phone" type="tel" id="complainants.{{ $index }}.phone" maxlength="11" placeholder="e.g. 09XX XXX XXXX">
+                                @error('complainants.'.$index.'.phone') <p class="error"><i class="ph ph-warning-circle"></i> {{ $message }}</p> @enderror
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-bottom:0;">
+                            <label for="complainants.{{ $index }}.address">Address</label>
+                            <input wire:model="complainants.{{ $index }}.address" type="text" id="complainants.{{ $index }}.address" placeholder="Purok / Street, Barangay Bula">
+                            @error('complainants.'.$index.'.address') <p class="error"><i class="ph ph-warning-circle"></i> {{ $message }}</p> @enderror
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label for="complainant_address">Address</label>
-                        <input wire:model="complainant_address" type="text" id="complainant_address" placeholder="Purok / Street, Barangay Bula">
-                        @error('complainant_address') <p class="error"><i class="ph ph-warning-circle"></i> {{ $message }}</p> @enderror
-                    </div>
+                    @endforeach
                 </div>
 
                 {{-- Respondent --}}
                 <div class="form-section">
-                    <h3 class="section-title">RESPONDENT DETAILS</h3>
-                    <div class="form-group">
-                        <label>Search Past Records</label>
-                        @livewire('digital-blotter.party-search', ['partyType' => 'respondent'], 'respondent-search')
-                        <small class="text-muted">Select to auto-fill, or type a new name below.</small>
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--gray-100, #f3f4f6); margin-bottom: 20px; padding-bottom: 8px;">
+                        <h3 class="section-title" style="border: none; margin: 0; padding: 0;">RESPONDENT DETAILS</h3>
+                        <button type="button" wire:click="addRespondent" class="btn" style="background: rgba(59, 130, 246, 0.1); color: #3b82f6; border: none; font-size: 0.75rem; padding: 6px 12px; border-radius: 99px; cursor: pointer; font-weight: 600;">+ Add Another</button>
                     </div>
-                    <div class="form-columns">
+
+                    @foreach($respondents as $index => $resp)
+                    <div style="background: var(--gray-50, #f9fafb); padding: 16px; border-radius: 8px; margin-bottom: 16px; border: 1px solid var(--gray-200, #e5e7eb); position: relative;">
+                        @if(count($respondents) > 1)
+                            <button type="button" wire:click="removeRespondent({{ $index }})" style="position: absolute; right: -8px; top: -8px; background: #ef4444; color: white; border: none; width: 24px; height: 24px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);"><i class="ph ph-x"></i></button>
+                        @endif
+
                         <div class="form-group">
-                            <label for="respondent">Full Name <span style="color: var(--danger, #ef4444);">*</span></label>
-                            <input wire:model="respondent" type="text" id="respondent" placeholder="e.g. Maria Santos">
-                            @error('respondent') <p class="error"><i class="ph ph-warning-circle"></i> {{ $message }}</p> @enderror
+                            <label>Search Past Records</label>
+                            @livewire('digital-blotter.party-search', ['partyType' => 'respondent', 'index' => $index], key('resp-edit-'.$index))
+                            <small class="text-muted">Select to auto-fill, or type a new name below.</small>
                         </div>
-                        <div class="form-group">
-                            <label for="respondent_phone">Contact Number</label>
-                            <input wire:model="respondent_phone" type="tel" id="respondent_phone" maxlength="11" placeholder="e.g. 09XX XXX XXXX">
-                            @error('respondent_phone') <p class="error"><i class="ph ph-warning-circle"></i> {{ $message }}</p> @enderror
+                        <div class="form-columns">
+                            <div class="form-group">
+                                <label for="respondents.{{ $index }}.name">Full Name <span style="color: var(--danger, #ef4444);">*</span></label>
+                                <input wire:model="respondents.{{ $index }}.name" type="text" id="respondents.{{ $index }}.name" placeholder="e.g. Maria Santos">
+                                @error('respondents.'.$index.'.name') <p class="error"><i class="ph ph-warning-circle"></i> {{ $message }}</p> @enderror
+                            </div>
+                            <div class="form-group">
+                                <label for="respondents.{{ $index }}.phone">Contact Number</label>
+                                <input wire:model="respondents.{{ $index }}.phone" type="tel" id="respondents.{{ $index }}.phone" maxlength="11" placeholder="e.g. 09XX XXX XXXX">
+                                @error('respondents.'.$index.'.phone') <p class="error"><i class="ph ph-warning-circle"></i> {{ $message }}</p> @enderror
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-bottom:0;">
+                            <label for="respondents.{{ $index }}.address">Address</label>
+                            <input wire:model="respondents.{{ $index }}.address" type="text" id="respondents.{{ $index }}.address" placeholder="Purok / Street, Barangay Bula">
+                            @error('respondents.'.$index.'.address') <p class="error"><i class="ph ph-warning-circle"></i> {{ $message }}</p> @enderror
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label for="respondent_address">Address</label>
-                        <input wire:model="respondent_address" type="text" id="respondent_address" placeholder="Purok / Street, Barangay Bula">
-                        @error('respondent_address') <p class="error"><i class="ph ph-warning-circle"></i> {{ $message }}</p> @enderror
-                    </div>
+                    @endforeach
                 </div>
             </div>
 

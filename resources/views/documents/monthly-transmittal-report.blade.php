@@ -1,7 +1,7 @@
 @extends('documents.layout')
 
 @section('doc-title', 'MONTHLY TRANSMITTAL REPORT')
-@section('doc-type', 'Monthly Transmittal Report')
+@section('doc-type', 'monthly-transmittal')
 
 @push('styles')
 <style>
@@ -81,8 +81,8 @@
         @php /** @var \App\Models\LuponCase $case_item */ @endphp
         <tr>
             <td class="text-center">{{ $case_item->case_number }}</td>
-            <td>{{ strtoupper($case_item->complainantCitizen->full_name ?? $case_item->complainant) }}</td>
-            <td>{{ strtoupper($case_item->respondentCitizen->full_name ?? $case_item->respondent) }}</td>
+            <td>{{ strtoupper($case_item->complainants->pluck('name')->join(', ') ?: $case_item->complainant) }}</td>
+            <td>{{ strtoupper($case_item->respondents->pluck('name')->join(', ') ?: $case_item->respondent) }}</td>
             <td>{{ strtoupper($case_item->status) }}</td>
         </tr>
         @empty

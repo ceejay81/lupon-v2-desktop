@@ -60,14 +60,18 @@
                             </a>
                         </td>
                         <td style="max-width: 160px;">
-                            <span style="font-weight: 500;">{{ Str::limit($case->complainant, 30) }}</span>
-                            @if($case->complainant_address)
+                            <span style="font-weight: 500;">{{ Str::limit($case->complainants->pluck('name')->join(', ') ?: $case->complainant, 30) }}</span>
+                            @if($case->complainants->isNotEmpty() && $case->complainants->first()->address)
+                                <div style="font-size: 0.72rem; color: var(--text-muted);">{{ Str::limit($case->complainants->first()->address, 35) }}</div>
+                            @elseif($case->complainant_address)
                                 <div style="font-size: 0.72rem; color: var(--text-muted);">{{ Str::limit($case->complainant_address, 35) }}</div>
                             @endif
                         </td>
                         <td style="max-width: 160px;">
-                            <span style="font-weight: 500;">{{ Str::limit($case->respondent, 30) }}</span>
-                            @if($case->respondent_address)
+                            <span style="font-weight: 500;">{{ Str::limit($case->respondents->pluck('name')->join(', ') ?: $case->respondent, 30) }}</span>
+                            @if($case->respondents->isNotEmpty() && $case->respondents->first()->address)
+                                <div style="font-size: 0.72rem; color: var(--text-muted);">{{ Str::limit($case->respondents->first()->address, 35) }}</div>
+                            @elseif($case->respondent_address)
                                 <div style="font-size: 0.72rem; color: var(--text-muted);">{{ Str::limit($case->respondent_address, 35) }}</div>
                             @endif
                         </td>
@@ -75,9 +79,19 @@
                             {{ $case->nature_of_case }}
                         </td>
                         <td>
-                            <span class="status-badge {{ $case->status_badge_class }}">
-                                {{ $case->status_label }}
-                            </span>
+                            <div style="position: relative; display: inline-block;">
+                                <select wire:change="updateCaseStatus({{ $case->id }}, $event.target.value)" class="status-badge {{ $case->status_badge_class }}" style="border: none; cursor: pointer; outline: none; appearance: none; padding-right: 1.25rem;">
+                                    <option value="filed" {{ $case->status == 'filed' ? 'selected' : '' }} style="color: #000; background: #fff;">Filed</option>
+                                    <option value="under_mediation" {{ $case->status == 'under_mediation' ? 'selected' : '' }} style="color: #000; background: #fff;">Mediation</option>
+                                    <option value="under_conciliation" {{ $case->status == 'under_conciliation' ? 'selected' : '' }} style="color: #000; background: #fff;">Conciliation</option>
+                                    <option value="under_arbitration" {{ $case->status == 'under_arbitration' ? 'selected' : '' }} style="color: #000; background: #fff;">Arbitration</option>
+                                    <option value="settled" {{ $case->status == 'settled' ? 'selected' : '' }} style="color: #000; background: #fff;">Settled</option>
+                                    <option value="certified_to_court" {{ $case->status == 'certified_to_court' ? 'selected' : '' }} style="color: #000; background: #fff;">Certified to Court</option>
+                                    <option value="dismissed" {{ $case->status == 'dismissed' ? 'selected' : '' }} style="color: #000; background: #fff;">Dismissed</option>
+                                    <option value="archived" {{ $case->status == 'archived' ? 'selected' : '' }} style="color: #000; background: #fff;">Archived</option>
+                                </select>
+                                <i class="ph ph-caret-down" style="position: absolute; right: 0.35rem; top: 50%; transform: translateY(-50%); font-size: 0.75rem; pointer-events: none; opacity: 0.7;"></i>
+                            </div>
                         </td>
                         <td style="font-size: 0.8rem; white-space: nowrap;">
                             {{ $case->filed_date->format('M d, Y') }}
@@ -117,7 +131,7 @@
 
         @if($cases->hasPages())
             <div style="padding: 1rem 1.5rem; border-top: 1px solid var(--border-light);">
-                {{ $cases->links() }}
+                {{ $cases->links('pagination::bootstrap-5') }}
             </div>
         @endif
     </div>

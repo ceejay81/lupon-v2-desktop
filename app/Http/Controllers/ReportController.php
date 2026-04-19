@@ -19,13 +19,10 @@ class ReportController extends Controller
         $settledCases = \App\Models\LuponCase::where('status', 'settled')->count();
         $ongoingCases = \App\Models\LuponCase::whereIn('status', ['under_mediation', 'under_conciliation', 'under_arbitration'])->count();
 
-        $settlementRate = $totalCases > 0 ? round(($settledCases / $totalCases) * 100) : 0;
-
-        // Fetch recent reports from history
-        $recentReports = Report::orderBy('year', 'desc')->orderBy('month', 'desc')->take(10)->get();
+        $cfaCases = \App\Models\LuponCase::where('status', 'certified_to_court')->count();
 
         return view('reports.index', compact(
-            'totalCases', 'settledCases', 'ongoingCases', 'settlementRate', 'currentYear', 'currentMonth', 'recentReports'
+            'totalCases', 'settledCases', 'ongoingCases', 'cfaCases', 'currentYear', 'currentMonth'
         ));
     }
 
@@ -155,7 +152,7 @@ class ReportController extends Controller
         $settings = \App\Models\Setting::pluck('value', 'key')->toArray();
 
         // Specific Case Context (New!)
-        $case = $caseId ? \App\Models\LuponCase::with(['complainantCitizen', 'respondentCitizen', 'pangkats'])->find($caseId) : null;
+        $case = $caseId ? \App\Models\LuponCase::with(['complainants', 'respondents', 'pangkats'])->find($caseId) : null;
 
         // Create a period date for easy formatting in views
         $period = \Carbon\Carbon::create($year, $month, 1);
@@ -172,12 +169,22 @@ class ReportController extends Controller
         }
 
         if ($type === 'monthly-transmittal' || $type === 'kp-form-28' || $slug === 'monthly-transmittal-report') {
-            $cases = \App\Models\LuponCase::with(['complainantCitizen', 'respondentCitizen'])
-                ->whereMonth('created_at', $month)
-                ->whereYear('created_at', $year)
+            $cases = \App\Models\LuponCase::with(['complainants', 'respondents'])
+                ->whereMonth('filed_date', $month)
+                ->whereYear('filed_date', $year)
                 ->get();
 
             return view('documents.monthly-transmittal-report', compact('cases', 'settings', 'month', 'year', 'savedContent', 'period', 'case'));
+        }
+
+        if ($type === 'cfa-cases') {
+            $cases = \App\Models\LuponCase::with(['complainants', 'respondents'])
+                ->where('status', 'certified_to_court')
+                ->whereMonth('filed_date', $month)
+                ->whereYear('filed_date', $year)
+                ->get();
+
+            return view('documents.cfa-cases-report', compact('cases', 'settings', 'month', 'year', 'savedContent', 'period', 'case'));
         }
 
         // Dynamic fallback for all other KP templates (kp-form-16, certificate-to-file-action, etc.)

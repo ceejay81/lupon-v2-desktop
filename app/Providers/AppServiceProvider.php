@@ -18,10 +18,11 @@ class AppServiceProvider extends ServiceProvider
     {
         \Illuminate\Pagination\Paginator::useBootstrapFive();
 
-        // Detect if running as a NativePHP Desktop App
-        // if (config('nativephp-internal.running')) {
-        //     $this->configureDesktopPaths();
-        // }
+        // Redirect storage to writable AppData path when running as desktop app
+        if (env('APP_STORAGE_PATH') && is_dir(env('APP_STORAGE_PATH'))) {
+            app()->useStoragePath(env('APP_STORAGE_PATH'));
+            config(['view.compiled' => env('APP_STORAGE_PATH').'/framework/views']);
+        }
     }
 
     /**

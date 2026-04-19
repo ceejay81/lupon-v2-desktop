@@ -24,17 +24,19 @@ class RelatedCasesLimitTest extends TestCase
      */
     private function fetchRelatedCasesWithTotal(LuponCase $case): array
     {
-        if ($case->complainant_id === null && $case->respondent_id === null) {
+        $citizenIds = $case->complainants->pluck('id')->merge($case->respondents->pluck('id'))->unique();
+
+        if ($citizenIds->isEmpty()) {
             return ['collection' => collect(), 'total' => 0];
         }
 
         $query = LuponCase::query()
-            ->select(['id', 'case_number', 'nature_of_case', 'status', 'filed_date'])
-            ->where(function ($q) use ($case) {
-                $q->where('complainant_id', $case->complainant_id)
-                    ->orWhere('respondent_id', $case->respondent_id);
+            ->select(['lupon_cases.id', 'case_number', 'nature_of_case', 'status', 'filed_date'])
+            ->where(function ($q) use ($citizenIds) {
+                $q->whereHas('complainants', fn ($q2) => $q2->whereIn('citizens.id', $citizenIds))
+                    ->orWhereHas('respondents', fn ($q2) => $q2->whereIn('citizens.id', $citizenIds));
             })
-            ->where('id', '!=', $case->id)
+            ->where('lupon_cases.id', '!=', $case->id)
             ->orderBy('filed_date', 'desc');
 
         $total = $query->count();
@@ -52,7 +54,7 @@ class RelatedCasesLimitTest extends TestCase
      * and the accompanying total count must equal the true number of related cases.
      */
     #[ErisRepeat(100)]
-    public function testRelatedCasesLimitedToFiveMostRecentWithAccurateTotal(): void
+    public function test_related_cases_limited_to_five_most_recent_with_accurate_total(): void
     {
         $this->forAll(
             Generators::choose(6, 20)  // number of related cases (always > 5)
@@ -62,19 +64,19 @@ class RelatedCasesLimitTest extends TestCase
 
             /** @var LuponCase $focalCase */
             $focalCase = LuponCase::factory()->create([
-                'complainant_id' => $complainantCitizen->id,
-                'respondent_id'  => $respondentCitizen->id,
-                'filed_date'     => now()->subDays(100),
+                'filed_date' => now()->subDays(100),
             ]);
+            $focalCase->complainants()->attach($complainantCitizen->id, ['role' => 'complainant']);
+            $focalCase->respondents()->attach($respondentCitizen->id, ['role' => 'respondent']);
 
             // Create related cases with distinct filed_dates so ordering is deterministic
             $createdCases = [];
             for ($i = 0; $i < $relatedCount; $i++) {
-                $createdCases[] = LuponCase::factory()->create([
-                    'complainant_id' => $complainantCitizen->id,
-                    'respondent_id'  => null,
-                    'filed_date'     => now()->subDays($relatedCount - $i + 1),
+                $related = LuponCase::factory()->create([
+                    'filed_date' => now()->subDays($relatedCount - $i + 1),
                 ]);
+                $related->complainants()->attach($complainantCitizen->id, ['role' => 'complainant']);
+                $createdCases[] = $related;
             }
 
             $result = $this->fetchRelatedCasesWithTotal($focalCase);

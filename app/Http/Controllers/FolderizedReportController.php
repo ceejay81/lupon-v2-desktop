@@ -15,9 +15,11 @@ class FolderizedReportController extends Controller
             ->orderBy('month', 'desc')
             ->get();
 
-        // 2. Fetch settled and certified cases with 100% compliance
+        // 2. Fetch settled and certified cases
+        // We optimize by checking for minimum document requirements in SQL before filtering completeness in PHP
         $casesData = \App\Models\LuponCase::whereIn('status', ['settled', 'certified_to_court'])
-            ->with(['complainantCitizen', 'respondentCitizen', 'hearings', 'documents'])
+            ->has('documents', '>=', 1) // Preliminary check: must have at least one document
+            ->with(['complainants', 'respondents', 'hearings', 'documents:id,lupon_case_id,document_type'])
             ->get()
             ->filter(function ($case) {
                 // Only archive cases that are 100% compliant (Process + Result docs exist)

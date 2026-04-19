@@ -1,7 +1,7 @@
 @extends('documents.layout')
 
 @section('doc-title', 'ENDORSEMENT LETTER')
-@section('doc-type', 'Endorsement Letter')
+@section('doc-type', 'endorsement')
 
 @push('styles')
 <style>

@@ -24,10 +24,17 @@
                 </p>
             </div>
         </div>
-        <div style="display: flex; gap: 0.75rem;">
+        <div style="display: flex; gap: 0.5rem; align-items: center;">
             <a href="{{ route('citizens.edit', $citizen) }}" class="btn" style="background: var(--bg-card); border: 1px solid var(--border-light); color: var(--text-secondary);">
                 <i class="ph ph-pencil"></i> Edit
             </a>
+            <form action="{{ route('citizens.destroy', $citizen) }}" method="POST" onsubmit="return confirm('WARNING: Are you sure you want to permanently delete this citizen? This will remove their profile entirely.')" style="margin:0;">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="btn" style="background: var(--danger-light); border: 1px solid var(--danger); color: var(--danger); cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='var(--danger)'; this.style.color='white'" onmouseout="this.style.background='var(--danger-light)'; this.style.color='var(--danger)'">
+                    <i class="ph ph-trash"></i> Delete
+                </button>
+            </form>
             <a href="{{ route('citizens.index') }}" class="btn" style="background: var(--bg-card); border: 1px solid var(--border-light); color: var(--text-secondary);">
                 <i class="ph ph-arrow-left"></i> Back
             </a>

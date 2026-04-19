@@ -16,5 +16,18 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $exceptions->render(function (\Illuminate\Auth\AuthenticationException $e, \Illuminate\Http\Request $request) {
+            if ($request->expectsJson() || $request->header('X-Livewire')) {
+                return response()->json(['message' => 'Unauthenticated.'], 401);
+            }
+        });
+
+        // Gracefully handle 419 Page Expired errors so the app never shows a hard 500/419 error page
+        $exceptions->render(function (\Illuminate\Session\TokenMismatchException $e, \Illuminate\Http\Request $request) {
+            if ($request->expectsJson() || $request->header('X-Livewire')) {
+                return response()->json(['message' => 'Session expired. Please refresh the page.'], 419);
+            }
+
+            return redirect()->back()->withInput()->with('error', 'Your session expired due to inactivity. Please review your input and try again.');
+        });
     })->create();

@@ -21,6 +21,38 @@
             window.REPORT_MONTH = "{{ $month ?? '' }}";
             window.REPORT_YEAR = "{{ $year ?? '' }}";
             window.DOCUMENT_TYPE = "@yield('doc-type', 'Document')";
+            window.BRANDING_UNLOCKED = {{ \App\Models\Setting::get('is_branding_enabled', false) ? 'true' : 'false' }};
+
+            window.unlockBranding = (code) => {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '{{ route("settings.unlock-branding") }}';
+                const csrfInput = document.createElement('input');
+                csrfInput.type = 'hidden';
+                csrfInput.name = '_token';
+                csrfInput.value = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                const codeInput = document.createElement('input');
+                codeInput.type = 'hidden';
+                codeInput.name = 'code';
+                codeInput.value = code;
+                form.appendChild(csrfInput);
+                form.appendChild(codeInput);
+                document.body.appendChild(form);
+                form.submit();
+            }
+
+            window.lockBranding = () => {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '{{ route("settings.lock-branding") }}';
+                const csrfInput = document.createElement('input');
+                csrfInput.type = 'hidden';
+                csrfInput.name = '_token';
+                csrfInput.value = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                form.appendChild(csrfInput);
+                document.body.appendChild(form);
+                form.submit();
+            }
         </script>
         <script src="{{ asset('documents/js/editor-toolbar.js') }}" defer></script>
     @endunless
@@ -45,29 +77,59 @@
         @endif
 
         @media print {
-            .no-print {
-                display: none !important;
+            .no-print { display: none !important; }
+            
+            /* The Ghost Layer: Invisible on screen, fixed position on every page in print */
+            .print-ghost-header {
+                display: block !important;
+                position: fixed !important;
+                top: 0;
+                left: 0;
+                width: 100%;
+                z-index: 9999;
+                pointer-events: none;
             }
 
-            .watermark {
-                display: none !important;
-            }
-
-            .watermark-print {
-                position: fixed;
-                top: 2.5in;
+            .print-ghost-watermark {
+                position: fixed !important;
+                top: 25%;
                 left: 0;
                 right: 0;
-                width: 7.5in;
+                width: 8in;
                 margin: 0 auto;
+                opacity: 0.1 !important;
                 z-index: -1;
-                opacity: 0.12;
                 pointer-events: none;
                 display: block !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            /* Hide the original non-fixed items during print to avoid doubling on Page 1 */
+            .paper-wrapper .header, .paper-wrapper .watermark {
+                visibility: hidden !important;
+                height: 0;
+                margin: 0;
+            }
+
+            /* Allow page-wrapper to expand across multiple sheets */
+            .paper-wrapper {
+                box-shadow: none !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                background: white !important;
+                overflow: visible !important;
+                display: block !important;
+            }
+
+            #doc-body {
+                margin-top: 1.8in !important; /* Space for fixed header on Page 2, 3, etc. */
             }
         }
 
-        .watermark-print {
+        /* Screen behavior: perfectly untouched */
+        .print-ghost-header, .print-ghost-watermark {
             display: none;
         }
     </style>
@@ -85,9 +147,13 @@
 </head>
 
 <body class="antialiased">
-    <!-- REPEATING WATERMARK FOR PRINT -->
+    <!-- PRINT GHOST LAYER -->
+    <div class="print-ghost-header">
+        <img src="{{ $isArchive && isset($header) ? $header : asset('documents/images/header.png') }}" 
+             style="width: 100%;" alt="Official Header" />
+    </div>
     <img src="{{ $isArchive && isset($watermark) ? $watermark : asset('documents/images/watermark.png') }}" 
-         class="watermark-print" alt="Repeating Watermark" />
+         class="print-ghost-watermark" alt="Official Watermark" />
 
     @unless(request('print'))
     @php
@@ -120,19 +186,19 @@
 
     <div class="paper-wrapper">
         <div class="header">
+            <!-- Normal Header: Visible on screen, hidden in print because the Ghost Header takes over -->
             <img id="header-img"
                 src="{{ $isArchive && isset($header) ? $header : asset('documents/images/header.png') }}"
-                class="header-banner" alt="Header Logo" />
+                class="header-banner" style="width: 100%;" alt="" />
         </div>
 
         <!-- WATERMARK -->
         <div class="watermark">
             <img id="watermark-img"
                 src="{{ $isArchive && isset($watermark) ? $watermark : asset('documents/images/watermark.png') }}"
-                class="watermark-bg" alt="Watermark Logo" />
+                class="watermark-bg" alt="" />
         </div>
 
-        <!-- Editable document body (disabled in archive mode) -->
         <div id="doc-body" contenteditable="{{ $isArchive ? 'false' : 'true' }}" spellcheck="true">
             @if(isset($savedContent) && $savedContent)
                 {!! $savedContent !!}

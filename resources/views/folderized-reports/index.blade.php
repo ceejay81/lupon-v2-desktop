@@ -137,6 +137,9 @@
                                                         </div>
                                                         <div class="doc-actions">
                                                             <a href="{{ route('reports.show', ['type' => Str::slug($report->type), 'month' => $report->month, 'year' => $report->year]) }}" class="action-link" title="View Document"><i class="ph ph-eye"></i></a>
+                                                            
+                                                            <!-- Added Print Action -->
+                                                            <a href="{{ route('reports.print', $report->id) }}?print=1" class="action-link highlight" title="Print Official Report"><i class="ph ph-printer"></i></a>
                                                         </div>
                                                     </div>
                                                 @empty
@@ -166,14 +169,31 @@
                                                                 <span class="case-participants">{{ $case->complainant }} vs {{ $case->respondent }}</span>
                                                             </div>
                                                             <div class="case-settlement-date">
-                                                                Settled: {{ $case->settled_at->format('M d, Y') }}
+                                                                @if($case->status === 'settled' && $case->settled_at)
+                                                                    Settled: {{ $case->settled_at->format('M d, Y') }}
+                                                                @else
+                                                                    Certified: {{ $case->updated_at->format('M d, Y') }}
+                                                                @endif
                                                             </div>
                                                         </div>
                                                         <div class="case-details">
-                                                            <div class="hearing-trail">
-                                                                <i class="ph ph-clock-counter-clockwise"></i>
-                                                                <span>{{ $case->hearings->count() }} Hearings Recorded</span>
+                                                            <div style="display: flex; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 0.75rem;">
+                                                                <div class="hearing-trail">
+                                                                    <i class="ph ph-clock-counter-clockwise"></i>
+                                                                    <span>{{ $case->hearings->count() }} Hearings Recorded</span>
+                                                                </div>
+                                                                
+                                                                @if($case->pangkats->isNotEmpty())
+                                                                    @php $pangkat = $case->pangkats->first(); @endphp
+                                                                    <div class="hearing-trail" style="background: rgba(59, 130, 246, 0.1); color: #3b82f6;">
+                                                                        <i class="ph ph-users-three"></i>
+                                                                        <span title="Pangkat Team">
+                                                                            {{ $pangkat->chairperson->name ?? 'N/A' }} (Chair)
+                                                                        </span>
+                                                                    </div>
+                                                                @endif
                                                             </div>
+
                                                             <div class="case-actions">
                                                                 <a href="{{ route('cases.show', $case) }}" class="btn-view-case">
                                                                     Open Full Case Folder <i class="ph ph-arrow-right"></i>

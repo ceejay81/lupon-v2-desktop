@@ -28,8 +28,8 @@ class LuponCaseController extends Controller
     public function show(LuponCase $case): \Illuminate\View\View
     {
         $case->load([
-            'complainantCitizen',
-            'respondentCitizen',
+            'complainants',
+            'respondents',
             'pangkats.chairperson',
             'pangkats.secretary',
             'pangkats.member',
@@ -40,19 +40,20 @@ class LuponCaseController extends Controller
 
         $slaData = $case->sla_data;
 
-        $citizensLinked = $case->complainant_id !== null || $case->respondent_id !== null;
+        $citizenIds = $case->complainants->pluck('id')->merge($case->respondents->pluck('id'))->unique();
+        $citizensLinked = $citizenIds->isNotEmpty();
 
         if (! $citizensLinked) {
             $relatedCases = collect();
             $relatedCasesTotal = 0;
         } else {
             $relatedCasesQuery = LuponCase::query()
-                ->select(['id', 'case_number', 'nature_of_case', 'status', 'filed_date'])
-                ->where(function ($query) use ($case) {
-                    $query->where('complainant_id', $case->complainant_id)
-                        ->orWhere('respondent_id', $case->respondent_id);
+                ->select(['lupon_cases.id', 'case_number', 'nature_of_case', 'status', 'filed_date'])
+                ->where(function ($query) use ($citizenIds) {
+                    $query->whereHas('complainants', fn ($q) => $q->whereIn('citizens.id', $citizenIds))
+                        ->orWhereHas('respondents', fn ($q) => $q->whereIn('citizens.id', $citizenIds));
                 })
-                ->where('id', '!=', $case->id)
+                ->where('lupon_cases.id', '!=', $case->id)
                 ->orderBy('filed_date', 'desc');
 
             $relatedCasesTotal = $relatedCasesQuery->count();
@@ -152,5 +153,28 @@ class LuponCaseController extends Controller
             'message' => 'Step updated.',
             'completed_at' => $isDone ? ($completedSteps[$step] ?? null) : null,
         ]);
+    }
+
+    /**
+     * Permanently delete a case.
+     */
+    public function destroy(LuponCase $case)
+    {
+        // The user explicitly requested a permanent deletion
+        $case->forceDelete();
+
+        return redirect()->route('cases.index')->with('success', 'Case permanently deleted.');
+    }
+
+    /**
+     * Update case status manually from the view page.
+     */
+    public function updateStatus(\Illuminate\Http\Request $request, LuponCase $case)
+    {
+        $request->validate(['status' => 'required|string']);
+        $case->status = $request->status;
+        $case->save();
+
+        return back()->with('success', 'Case status manually updated.');
     }
 }

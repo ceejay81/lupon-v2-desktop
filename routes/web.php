@@ -25,7 +25,8 @@ Route::middleware('auth')->group(function () {
         ->name('dashboard');
 
     // Cases (Digital Blotter)
-    Route::resource('cases', App\Http\Controllers\LuponCaseController::class)->only(['index', 'create', 'show', 'edit']);
+    Route::resource('cases', App\Http\Controllers\LuponCaseController::class)->only(['index', 'create', 'show', 'edit', 'destroy']);
+    Route::post('cases/{case}/update-status', [App\Http\Controllers\LuponCaseController::class, 'updateStatus'])->name('cases.update-status');
 
     // Hearings
     Route::resource('hearings', App\Http\Controllers\HearingController::class)->only(['index', 'create', 'show']);
@@ -46,7 +47,8 @@ Route::middleware('auth')->group(function () {
     Route::post('settings/maintenance/restore', [App\Http\Controllers\SettingController::class, 'maintenance'])->name('settings.maintenance.restore');
 
     // Hidden Branding (Unlock and Update)
-    Route::get('settings/unlock-branding', [App\Http\Controllers\SettingController::class, 'unlockBranding'])->name('settings.unlock-branding');
+    Route::post('settings/unlock-branding', [App\Http\Controllers\SettingController::class, 'unlockBranding'])->name('settings.unlock-branding');
+    Route::post('settings/lock-branding', [App\Http\Controllers\SettingController::class, 'lockBranding'])->name('settings.lock-branding');
     Route::post('settings/branding', [App\Http\Controllers\SettingController::class, 'updateBranding'])->name('settings.update-branding');
 
     // Lupon Members CRUD

@@ -1,6 +1,7 @@
 @extends('documents.layout')
 
 @section('doc-title', 'STATUS OF CASE')
+@section('doc-type', 'Status of Case')
 
 @section('content')
 <div style="font-family: Arial, sans-serif;">
@@ -8,8 +9,8 @@
 
     <div style="display: flex; justify-content: space-between; margin-bottom: 0.4in;">
         <div style="width: 50%;">
-            <p style="margin: 0; font-weight: bold; line-height: 1.15; font-size: 11pt;"><span class="doc-field doc-field-medium" data-field="complainant">{{ strtoupper($case->complainantCitizen->full_name ?? $case->complainant ?? '') }}</span></p>
-            <p style="margin: 0; font-weight: bold; line-height: 1.15; font-size: 11pt;"><span class="doc-field doc-field-long" data-field="complainant_address">{{ $case->complainantCitizen->address ?? '' }}</span></p>
+            <p style="margin: 0; font-weight: bold; line-height: 1.15; font-size: 11pt;"><span class="doc-field doc-field-medium" data-field="complainant">{{ strtoupper($case->complainants->pluck('name')->join(', ') ?: $case->complainant ?? '') }}</span></p>
+            <p style="margin: 0; font-weight: bold; line-height: 1.15; font-size: 11pt;"><span class="doc-field doc-field-long" data-field="complainant_address">{{ $case->complainants->first()->address ?? $case->complainant_address ?? '' }}</span></p>
             <p style="margin: 0; line-height: 1.15; font-size: 11pt;">{{ $settings['city_name'] ?? 'General Santos City' }}</p>
             <p style="margin: 0; line-height: 1.15; font-size: 10pt;">===================</p>
             <p style="margin: 0; font-style: italic; font-size: 9pt; text-indent: 0.2in;">Complainant/s</p>
@@ -23,8 +24,8 @@
     <p style="margin: 0.1in 0; text-indent: 0.5in; font-size: 10pt;">~against~</p>
 
     <div style="margin-bottom: 0.5in;">
-        <p style="margin: 0; font-weight: bold; line-height: 1.15; font-size: 11pt;"><span class="doc-field doc-field-medium" data-field="respondent">{{ strtoupper($case->respondentCitizen->full_name ?? $case->respondent ?? '') }}</span></p>
-        <p style="margin: 0; font-weight: bold; line-height: 1.15; font-size: 11pt;"><span class="doc-field doc-field-long" data-field="respondent_address">{{ $case->respondentCitizen->address ?? '' }}</span></p>
+        <p style="margin: 0; font-weight: bold; line-height: 1.15; font-size: 11pt;"><span class="doc-field doc-field-medium" data-field="respondent">{{ strtoupper($case->respondents->pluck('name')->join(', ') ?: $case->respondent ?? '') }}</span></p>
+        <p style="margin: 0; font-weight: bold; line-height: 1.15; font-size: 11pt;"><span class="doc-field doc-field-long" data-field="respondent_address">{{ $case->respondents->first()->address ?? $case->respondent_address ?? '' }}</span></p>
         <p style="margin: 0; line-height: 1.15; font-size: 11pt;">{{ $settings['city_name'] ?? 'General Santos City' }}</p>
         <p style="margin: 0; line-height: 1.15; font-size: 10pt;">===================</p>
         <p style="margin: 0; font-style: italic; font-size: 9pt; text-indent: 0.2in;">Respondent/s</p>

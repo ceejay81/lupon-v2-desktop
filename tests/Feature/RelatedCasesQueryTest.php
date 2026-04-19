@@ -24,17 +24,19 @@ class RelatedCasesQueryTest extends TestCase
      */
     private function fetchRelatedCases(LuponCase $case): Collection
     {
-        if ($case->complainant_id === null && $case->respondent_id === null) {
+        $citizenIds = $case->complainants->pluck('id')->merge($case->respondents->pluck('id'))->unique();
+
+        if ($citizenIds->isEmpty()) {
             return collect();
         }
 
         return LuponCase::query()
-            ->select(['id', 'case_number', 'nature_of_case', 'status', 'filed_date'])
-            ->where(function ($query) use ($case) {
-                $query->where('complainant_id', $case->complainant_id)
-                    ->orWhere('respondent_id', $case->respondent_id);
+            ->select(['lupon_cases.id', 'case_number', 'nature_of_case', 'status', 'filed_date'])
+            ->where(function ($query) use ($citizenIds) {
+                $query->whereHas('complainants', fn ($q) => $q->whereIn('citizens.id', $citizenIds))
+                    ->orWhereHas('respondents', fn ($q) => $q->whereIn('citizens.id', $citizenIds));
             })
-            ->where('id', '!=', $case->id)
+            ->where('lupon_cases.id', '!=', $case->id)
             ->orderBy('filed_date', 'desc')
             ->limit(5)
             ->get();
@@ -49,7 +51,7 @@ class RelatedCasesQueryTest extends TestCase
      * at least one of those citizen IDs, and must never contain the current case.
      */
     #[ErisRepeat(100)]
-    public function testRelatedCasesContainsExactlyCorrectCasesAndNeverCurrentCase(): void
+    public function test_related_cases_contains_exactly_correct_cases_and_never_current_case(): void
     {
         $this->forAll(
             Generators::choose(1, 4),  // number of related cases
@@ -60,31 +62,33 @@ class RelatedCasesQueryTest extends TestCase
 
             /** @var LuponCase $focalCase */
             $focalCase = LuponCase::factory()->create([
-                'complainant_id' => $complainantCitizen->id,
-                'respondent_id'  => $respondentCitizen->id,
-                'filed_date'     => now()->subDays(10),
+                'filed_date' => now()->subDays(10),
             ]);
+            $focalCase->complainants()->attach($complainantCitizen->id, ['role' => 'complainant']);
+            $focalCase->respondents()->attach($respondentCitizen->id, ['role' => 'respondent']);
 
             // Create related cases — each shares complainant_id or respondent_id with focal case
             $relatedIds = [];
             for ($i = 0; $i < $relatedCount; $i++) {
                 $useComplainant = ($i % 2 === 0);
                 $related = LuponCase::factory()->create([
-                    'complainant_id' => $useComplainant ? $complainantCitizen->id : null,
-                    'respondent_id'  => ! $useComplainant ? $respondentCitizen->id : null,
-                    'filed_date'     => now()->subDays(20 + $i),
+                    'filed_date' => now()->subDays(20 + $i),
                 ]);
+                if ($useComplainant) {
+                    $related->complainants()->attach($complainantCitizen->id, ['role' => 'complainant']);
+                } else {
+                    $related->respondents()->attach($respondentCitizen->id, ['role' => 'respondent']);
+                }
                 $relatedIds[] = $related->id;
             }
 
             // Create unrelated cases — different citizens, no overlap
             for ($i = 0; $i < $unrelatedCount; $i++) {
                 $otherCitizen = Citizen::factory()->create();
-                LuponCase::factory()->create([
-                    'complainant_id' => $otherCitizen->id,
-                    'respondent_id'  => null,
-                    'filed_date'     => now()->subDays(5 + $i),
+                $unrelated = LuponCase::factory()->create([
+                    'filed_date' => now()->subDays(5 + $i),
                 ]);
+                $unrelated->complainants()->attach($otherCitizen->id, ['role' => 'complainant']);
             }
 
             $result = $this->fetchRelatedCases($focalCase);
@@ -118,12 +122,12 @@ class RelatedCasesQueryTest extends TestCase
     /**
      * When both citizen IDs are null, the query is skipped and an empty collection is returned.
      */
-    public function testSkipsQueryWhenBothCitizenIdsAreNull(): void
+    public function test_skips_query_when_both_citizen_ids_are_null(): void
     {
         /** @var LuponCase $case */
         $case = LuponCase::factory()->create([
             'complainant_id' => null,
-            'respondent_id'  => null,
+            'respondent_id' => null,
         ]);
 
         LuponCase::factory()->count(3)->create();

@@ -27,12 +27,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const currentHash = window.location.hash.substring(1);
     if (currentHash) { switchTab(currentHash); }
     
-    // Auto-refresh hearing data when hearing form is saved
+    // Refresh hearing components reactively when a hearing is saved (no full page reload)
     if (window.Livewire) {
         Livewire.on('hearingSaved', () => {
-            setTimeout(() => {
-                window.location.reload();
-            }, 500);
+            if (document.querySelector('[wire\\:id]')) {
+                Livewire.all().forEach(component => component.call('$refresh'));
+            }
         });
     }
 });

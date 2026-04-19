@@ -11,12 +11,8 @@
 </head>
 <body>
     <div class="login-container">
-        <div class="login-left">
-            <div class="login-left-content">
-                <div class="login-illustration-frame">
-                    <div class="login-illustration-image" style="background-image: url('{{ asset('images/luponloginlogo.png') }}');"></div>
-                </div>
-            </div>
+        <div class="login-left" style="background-image: url('{{ asset('images/luponloginlogo.jpg') }}');">
+            {{-- Content removed to allow background to be fullscreen hero --}}
         </div>
 
         <div class="login-right">

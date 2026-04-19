@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Lupon - ' . \App\Models\Setting::get('barangay_name', 'Barangay Bula') . ' Justice System')</title>
+    <title>@yield('title', 'Lupon - ' . \App\Models\Setting::get('barangay_name', 'Barangay Bula') . ' Justice System')
+    </title>
     <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
     <link rel="stylesheet" href="{{ asset('vendor/phosphor-icons/regular/style.css') }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -19,7 +20,8 @@
     </style>
 </head>
 
-<body x-data="{ sidebarCollapsed: localStorage.getItem('sidebar-collapsed') === 'true' }" x-effect="localStorage.setItem('sidebar-collapsed', sidebarCollapsed)">
+<body x-data="{ sidebarCollapsed: localStorage.getItem('sidebar-collapsed') === 'true' }"
+    x-effect="localStorage.setItem('sidebar-collapsed', sidebarCollapsed)">
     <!-- Mobile sidebar toggle (pure CSS) -->
     <input type="checkbox" id="mobile-sidebar-toggle" class="mobile-sidebar-checkbox">
     <label for="mobile-sidebar-toggle" class="mobile-hamburger" aria-label="Toggle navigation">
@@ -34,7 +36,8 @@
         <aside class="sidebar no-print" :class="{ 'collapsed': sidebarCollapsed }">
             <div class="sidebar-header">
                 <div class="logo-wrapper">
-                    <img src="{{ asset(\App\Models\Setting::get('barangay_logo_path') ?: 'images/bulalogo.png') }}" alt="Barangay Logo" class="sidebar-logo">
+                    <img src="{{ asset(\App\Models\Setting::get('barangay_logo_path') ?: 'images/bulalogo.png') }}"
+                        alt="Barangay Logo" class="sidebar-logo">
                     <div class="sidebar-title-group" x-show="!sidebarCollapsed" x-transition>
                         <div class="logo">Lupon</div>
                         <p class="logo-subtitle">{{ \App\Models\Setting::get('barangay_name', 'Barangay Bula') }}</p>
@@ -91,7 +94,8 @@
                     </a>
                     <form method="POST" action="{{ route('logout') }}" id="logout-form">
                         @csrf
-                        <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="nav-item">
+                        <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
+                            class="nav-item">
                             <i class="ph ph-sign-out"></i>
                             <span x-show="!sidebarCollapsed">Sign Out</span>
                         </a>
@@ -113,10 +117,8 @@
         </aside>
 
         <!-- Sidebar Toggle (Floating Circular Button) -->
-        <button @click="sidebarCollapsed = !sidebarCollapsed" 
-                class="sidebar-toggle no-print" 
-                :class="{ 'collapsed': sidebarCollapsed }" 
-                title="Toggle Sidebar">
+        <button @click="sidebarCollapsed = !sidebarCollapsed" class="sidebar-toggle no-print"
+            :class="{ 'collapsed': sidebarCollapsed }" title="Toggle Sidebar">
             <i class="ph ph-caret-left sidebar-toggle-icon" :class="{ 'is-collapsed': sidebarCollapsed }"></i>
         </button>
 
@@ -132,7 +134,8 @@
                         <i class="ph-duotone ph-moon" id="theme-icon"></i>
                     </button>
 
-                    <div class="user-profile-circle" style="background: var(--gray-100); border: 1px solid var(--gray-200); color: var(--accent-blue); font-weight: 700;">
+                    <div class="user-profile-circle"
+                        style="background: var(--gray-100); border: 1px solid var(--gray-200); color: var(--accent-blue); font-weight: 700;">
                         {{ auth()->check() ? substr(auth()->user()->name, 0, 1) : 'G' }}
                     </div>
                 </div>
@@ -141,28 +144,28 @@
             @if(session('success') || session('error') || session('message') || session('warning') || session('status') || session('attendance_message') || session('pangkat_message') || $errors->any())
                 <div class="alert-container no-print">
                     @foreach([
-                        'success'            => ['type' => 'success', 'icon' => 'ph-check-circle'],
-                        'message'            => ['type' => 'success', 'icon' => 'ph-check-circle'],
-                        'status'             => ['type' => 'success', 'icon' => 'ph-check-circle'],
-                        'attendance_message' => ['type' => 'success', 'icon' => 'ph-check-circle'],
-                        'pangkat_message'    => ['type' => 'success', 'icon' => 'ph-check-circle'],
-                        'warning'            => ['type' => 'warning', 'icon' => 'ph-warning'],
-                        'error'              => ['type' => 'error',   'icon' => 'ph-warning-circle'],
-                    ] as $key => $config)
+                            'success' => ['type' => 'success', 'icon' => 'ph-check-circle'],
+                            'message' => ['type' => 'success', 'icon' => 'ph-check-circle'],
+                            'status' => ['type' => 'success', 'icon' => 'ph-check-circle'],
+                            'attendance_message' => ['type' => 'success', 'icon' => 'ph-check-circle'],
+                            'pangkat_message' => ['type' => 'success', 'icon' => 'ph-check-circle'],
+                            'warning' => ['type' => 'warning', 'icon' => 'ph-warning'],
+                            'error' => ['type' => 'error', 'icon' => 'ph-warning-circle'],
+                        ] as $key => $config)
                         @if(session($key))
                             <div class="alert alert-{{ $config['type'] }}">
                                 <i class="ph {{ $config['icon'] }}"></i>
                                 <span>{{ session($key) }}</span>
-                            </div>
+                                </div>
                         @endif
                     @endforeach
-                    @if($errors->any())
-                        <div class="alert alert-error">
-                            <i class="ph ph-warning-circle"></i>
-                            <span>{{ $errors->first() }}</span>
-                        </div>
-                    @endif
-                </div>
+                        @if($errors->any())
+                            <div class="alert alert-error">
+                                <i class="ph ph-warning-circle"></i>
+                                <span>{{ $errors->first() }}</span>
+                            </div>
+                        @endif
+                    </div>
             @endif
 
             @yield('content')
@@ -215,6 +218,48 @@
                 setTimeout(() => toast.remove(), 3900);
             });
         });
+    </script>
+
+    <script>
+        /**
+         * Secret Console Helper
+         * Usage: unlockBranding('LUPON-PREMIUM-2026')
+         */
+        window.unlockBranding = (code) => {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '{{ route("settings.unlock-branding") }}';
+            
+            const csrfInput = document.createElement('input');
+            csrfInput.type = 'hidden';
+            csrfInput.name = '_token';
+            csrfInput.value = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            
+            const codeInput = document.createElement('input');
+            codeInput.type = 'hidden';
+            codeInput.name = 'code';
+            codeInput.value = code;
+            
+            form.appendChild(csrfInput);
+            form.appendChild(codeInput);
+            document.body.appendChild(form);
+            form.submit();
+        }
+
+        window.lockBranding = () => {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '{{ route("settings.lock-branding") }}';
+            
+            const csrfInput = document.createElement('input');
+            csrfInput.type = 'hidden';
+            csrfInput.name = '_token';
+            csrfInput.value = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            
+            form.appendChild(csrfInput);
+            document.body.appendChild(form);
+            form.submit();
+        }
     </script>
 
     @stack('modals')
