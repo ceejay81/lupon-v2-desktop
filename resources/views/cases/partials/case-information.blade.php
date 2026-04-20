@@ -55,11 +55,6 @@
                 <span class="blotter-label">Days in Barangay</span>
                 <span class="blotter-value">{{ $case->no_of_days_in_barangay ?? '—' }} days</span>
             </div>
-            
-            <div class="blotter-item">
-                <span class="blotter-label">Compliance Rate</span>
-                <span class="blotter-value">{{ number_format($case->percentage_of_compliance, 1) }}%</span>
-            </div>
         </div>
         
         <div class="blotter-status-grid">

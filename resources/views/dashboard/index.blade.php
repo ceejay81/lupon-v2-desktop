@@ -72,9 +72,9 @@
                     @if($hearing->luponCase)
                     <div style="padding: 1rem 1.5rem; border-bottom: 1px solid var(--gray-100); display: flex; align-items: center; gap: 1rem; transition: background 0.2s;" onmouseover="this.style.background='var(--gray-50)'" onmouseout="this.style.background='transparent'">
                         <div style="background: var(--accent-light); color: var(--accent-blue); padding: 0.5rem; border-radius: var(--radius-md); text-align: center; min-width: 80px;">
-                            <div style="font-size: 0.7rem; font-weight: 700;">{{ $hearing->scheduled_at->format('h:i A') }}</div>
+                            <div style="font-size: 0.7rem; font-weight: 700;">{{ $hearing->scheduled_at?->format('h:i A') ?? 'TBA' }}</div>
                             <div style="font-size: 0.6rem; text-transform: uppercase; margin-top: 2px;">{{ $hearing->hearing_type }}</div>
-                            <div style="font-size: 0.6rem; color: var(--text-muted); margin-top: 1px;">{{ $hearing->scheduled_at->format('M d') }}</div>
+                            <div style="font-size: 0.6rem; color: var(--text-muted); margin-top: 1px;">{{ $hearing->scheduled_at?->format('M d') ?? '—' }}</div>
                         </div>
                         <div style="flex: 1; min-width: 0;">
                             <div style="font-weight: 700; font-size: 0.875rem;">{{ $hearing->luponCase->case_number }}</div>
@@ -125,7 +125,7 @@
                                     <span style="font-size: 0.75rem;">Failed Conciliation</span>
                                 </td>
                                 <td style="padding-right: 24px; font-size: 0.75rem; color: var(--text-muted);">
-                                    {{ $case->updated_at->format('M d, Y') }}
+                                    {{ $case->updated_at?->format('M d, Y') ?? 'N/A' }}
                                 </td>
                             </tr>
                             @empty
@@ -185,7 +185,7 @@
                                         <span class="badge badge-warning">● {{ ucfirst(str_replace('_', ' ', $case->status)) }}</span>
                                     @endif
                                 </td>
-                                <td>{{ $case->created_at->format('m/d/y') }}</td>
+                                <td>{{ $case->created_at?->format('m/d/y') ?? 'N/A' }}</td>
                                 <td style="padding-right: 24px;">
                                     <a href="{{ route('cases.show', $case) }}" class="btn-link">View Record</a>
                                 </td>

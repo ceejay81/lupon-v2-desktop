@@ -9,15 +9,15 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class HearingAttendanceFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
     public function definition(): array
     {
         return [
-            //
+            'hearing_id' => null,
+            'party_type' => fake()->randomElement(['complainant', 'respondent', 'lupon_member']),
+            'name' => fake()->name(),
+            'lupon_member_id' => null,
+            'attended' => fake()->boolean(75),
+            'signature_path' => null,
         ];
     }
 }

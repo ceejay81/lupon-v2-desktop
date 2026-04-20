@@ -48,10 +48,6 @@
             </thead>
             <tbody>
                 @forelse($cases as $case)
-                    @php
-                        $docsPercent = $docsCompleteness[$case->id] ?? 0;
-                        $docsClass   = $docsPercent === 100 ? 'docs-complete' : ($docsPercent > 0 ? 'docs-incomplete' : '');
-                    @endphp
                     <tr>
                         <td>
                             <a href="{{ route('cases.show', $case) }}"
@@ -97,14 +93,13 @@
                             {{ $case->filed_date->format('M d, Y') }}
                         </td>
                         <td style="text-align: center;">
-                            @php $percent = $case->docs_completeness; @endphp
-                            @if($percent === 100)
-                                <div style="display: inline-flex; align-items: center; gap: 0.5rem; color: #10b981; font-weight: 700; font-size: 0.9rem;">
-                                    <i class="ph ph-check-square" style="font-size: 1.25rem;"></i> 100%
+                            @if($case->documents_count > 0)
+                                <div style="display: inline-flex; align-items: center; gap: 0.25rem; color: #10b981; font-weight: 600; font-size: 0.9rem;">
+                                    <i class="ph ph-files" style="font-size: 1rem;"></i> {{ $case->documents_count }}
                                 </div>
                             @else
-                                <div style="display: inline-flex; align-items: center; gap: 0.5rem; color: #f59e0b; font-weight: 700; font-size: 0.9rem;">
-                                    <i class="ph ph-warning" style="font-size: 1.25rem;"></i> {{ $percent }}%
+                                <div style="display: inline-flex; align-items: center; gap: 0.25rem; color: var(--text-muted); font-weight: 500; font-size: 0.9rem;">
+                                    <i class="ph ph-files" style="font-size: 1rem;"></i> 0
                                 </div>
                             @endif
                         </td>

@@ -11,41 +11,119 @@ class Document extends Model
 
     protected $guarded = [];
 
-    public function luponCase()
+    public function luponCase(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(LuponCase::class);
     }
 
-    public function hearing()
+    public function hearing(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Hearing::class);
     }
 
+    public function uploader(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(User::class, 'uploaded_by');
+    }
+
+    /**
+     * Return the download URL for the uploaded file, or '#' if path is absent.
+     */
     public function getViewerUrlAttribute(): string
     {
-        if ($this->file_path !== 'digital_record') {
-            return route('media.show', ['path' => $this->file_path]);
+        if (! $this->file_path || $this->file_path === 'digital_record') {
+            return '#';
         }
 
-        // Mapping types to their editor routes
-        $routes = [
-            'Status of Case' => 'cases.export.status-of-case',
-            'Invitation Notice' => 'cases.export.invitation-notice',
-            'Notice of Hearing (KP Form 8)' => 'cases.export.notice-of-hearing',
-            'Summons (KP Form 9)' => 'cases.export.summon',
-            'Amicable Settlement (KP Form 16)' => 'cases.export.amicable-settlement',
-            'Kasabutan' => 'cases.export.kasabutan',
-            'Certification to File Action (KP Form 20)' => 'cases.export.certificate-to-file-action',
-        ];
+        return route('media.show', ['path' => $this->file_path]);
+    }
 
-        if (isset($routes[$this->document_type])) {
-            return route($routes[$this->document_type], $this->lupon_case_id);
+    /**
+     * Return the download route for this document.
+     */
+    public function getDownloadUrlAttribute(): string
+    {
+        return route('cases.documents.download', [
+            'case' => $this->lupon_case_id,
+            'document' => $this->id,
+        ]);
+    }
+
+    /**
+     * Return the open-in-external-app JSON route for Electron.
+     */
+    public function getOpenUrlAttribute(): string
+    {
+        return route('cases.documents.open', [
+            'case' => $this->lupon_case_id,
+            'document' => $this->id,
+        ]);
+    }
+
+    /**
+     * Return a human-readable file size string (e.g. "2.4 MB").
+     */
+    public function getFileSizeFormattedAttribute(): string
+    {
+        $bytes = $this->file_size ?? 0;
+
+        if ($bytes === 0) {
+            return '—';
         }
 
-        if ($this->document_type === 'Minutes of Hearing' && $this->hearing_id) {
-            return route('hearings.show', $this->hearing_id);
+        $units = ['B', 'KB', 'MB', 'GB'];
+        $i = 0;
+
+        while ($bytes >= 1024 && $i < count($units) - 1) {
+            $bytes /= 1024;
+            $i++;
         }
 
-        return '#';
+        return round($bytes, 1).' '.$units[$i];
+    }
+
+    /**
+     * Return a Phosphor icon class based on mime type or file extension.
+     */
+    public function getFileIconAttribute(): string
+    {
+        $mime = $this->mime_type ?? '';
+        $ext = strtolower(pathinfo($this->filename ?? '', PATHINFO_EXTENSION));
+
+        if (str_contains($mime, 'pdf') || $ext === 'pdf') {
+            return 'ph-file-pdf';
+        }
+
+        if (in_array($ext, ['doc', 'docx']) || str_contains($mime, 'word') || str_contains($mime, 'officedocument.wordprocessing')) {
+            return 'ph-file-doc';
+        }
+
+        if (in_array($ext, ['xls', 'xlsx']) || str_contains($mime, 'spreadsheet') || str_contains($mime, 'excel')) {
+            return 'ph-file-xls';
+        }
+
+        if ($ext === 'odt' || str_contains($mime, 'opendocument')) {
+            return 'ph-file-text';
+        }
+
+        if (str_contains($mime, 'image/') || in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp'])) {
+            return 'ph-file-image';
+        }
+
+        return 'ph-file';
+    }
+
+    /**
+     * Return the CSS colour associated with this file type for icon theming.
+     */
+    public function getFileIconColorAttribute(): string
+    {
+        return match ($this->file_icon) {
+            'ph-file-pdf' => '#ef4444',
+            'ph-file-doc' => '#2563eb',
+            'ph-file-xls' => '#16a34a',
+            'ph-file-image' => '#7c3aed',
+            default => '#6b7280',
+        };
     }
 }

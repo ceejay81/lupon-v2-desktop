@@ -9,15 +9,14 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class LuponMemberFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
     public function definition(): array
     {
         return [
-            //
+            'name' => fake()->name(),
+            'position' => 'Lupon Member',
+            'member_type' => 'regular',
+            'appointment_date' => fake()->dateTimeBetween('-2 years', 'now'),
+            'is_active' => fake()->boolean(90),
         ];
     }
 }

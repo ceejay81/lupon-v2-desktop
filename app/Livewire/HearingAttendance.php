@@ -128,18 +128,6 @@ class HearingAttendance extends Component
             'outcome' => $this->outcome,
         ]);
 
-        // Automatic Document Trigger: Create 'Minutes' if completed
-        if ($this->hearing_status === 'completed') {
-            \App\Models\Document::firstOrCreate(
-                ['lupon_case_id' => $this->hearing->lupon_case_id, 'document_type' => 'Minutes of Hearing'],
-                [
-                    'filename' => 'Minutes of Hearing',
-                    'file_path' => 'digital_record',
-                    'uploaded_by' => auth()->id() ?? 1,
-                ]
-            );
-        }
-
         $this->dispatch('hearingSaved'); // refresh calendar
         $this->dispatch('toast', type: 'success', message: 'Hearing record updated successfully.');
     }
@@ -150,16 +138,6 @@ class HearingAttendance extends Component
         $case->update([
             'status' => 'settled',
         ]);
-
-        // Automatic Document Trigger: Create 'Settlement'
-        \App\Models\Document::firstOrCreate(
-            ['lupon_case_id' => $case->id, 'document_type' => 'Amicable Settlement (KP Form 16)'],
-            [
-                'filename' => 'Amicable Settlement (KP Form 16)',
-                'file_path' => 'digital_record',
-                'uploaded_by' => auth()->id() ?? 1,
-            ]
-        );
 
         session()->flash('success', 'Case has been successfully MARKED AS SETTLED.');
         $this->redirect(route('cases.show', $case), navigate: true);
@@ -191,16 +169,6 @@ class HearingAttendance extends Component
         $case->update([
             'status' => 'certified_to_court',
         ]);
-
-        // Automatic Document Trigger: Create 'Certification'
-        \App\Models\Document::firstOrCreate(
-            ['lupon_case_id' => $case->id, 'document_type' => 'Certification to File Action (KP Form 20)'],
-            [
-                'filename' => 'Certification to File Action (KP Form 20)',
-                'file_path' => 'digital_record',
-                'uploaded_by' => auth()->id() ?? 1,
-            ]
-        );
 
         session()->flash('success', 'Case has been CERTIFIED TO COURT.');
         $this->redirect(route('reports.show', ['type' => 'certificate-to-file-action', 'case_id' => $case->id]), navigate: true);

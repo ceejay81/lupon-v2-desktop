@@ -267,41 +267,7 @@
         font-size: 12pt;
     }
 
-    .paper-wrapper {
-        width: 100%;
-        min-height: 14in;
-        padding-top: 1in;
-        padding-bottom: 1in;
-        padding-left: 0.8in;
-        padding-right: 0.8in;
-        box-sizing: border-box;
-        position: relative;
-        overflow: visible;
-        z-index: 0;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .header-banner {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: auto;
-        z-index: 10;
-        opacity: 1.0;
-    }
-
-    .watermark-bg {
-        position: absolute;
-        top: 3.5in;
-        left: 0;
-        width: 100%;
-        height: auto;
-        opacity: 0.9;
-        z-index: 1;
-        pointer-events: none;
-    }
+    /* .paper-wrapper, .header-banner, and .watermark-bg are now handled exclusively by layout.blade.php for print fidelity */
 
     #doc-body:empty::before {
         display: none;
@@ -314,7 +280,7 @@
 
 /* editable area */
 #doc-body {
-    margin-top: 2in;
+    margin-top: 1.8in; /* Unified with print to prevent jump */
     position: relative;
     z-index: 2;
     font-family: Arial, sans-serif;
@@ -344,8 +310,8 @@
     }
 
     #doc-body {
-        margin-top: 1.8in !important;
         padding-bottom: 0.5in !important; /* Safety buffer at the bottom of the last page */
+        min-height: 0 !important;
     }
 }
 

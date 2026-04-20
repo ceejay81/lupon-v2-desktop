@@ -23,6 +23,12 @@ class AppServiceProvider extends ServiceProvider
             app()->useStoragePath(env('APP_STORAGE_PATH'));
             config(['view.compiled' => env('APP_STORAGE_PATH').'/framework/views']);
         }
+
+        // Ensure Livewire temporary upload directory always exists (local disk)
+        $livewireTmp = storage_path('app/private/livewire-tmp');
+        if (! is_dir($livewireTmp)) {
+            \Illuminate\Support\Facades\File::makeDirectory($livewireTmp, 0755, true);
+        }
     }
 
     /**

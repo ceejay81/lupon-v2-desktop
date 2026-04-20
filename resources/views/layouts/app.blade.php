@@ -11,6 +11,68 @@
     <link rel="stylesheet" href="{{ asset('vendor/phosphor-icons/regular/style.css') }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     {{-- Alpine.js is now managed natively by Livewire 3 --}}
+
+    <!-- Polyfills for older Electron/Chromium compatibility -->
+    <script>
+        if (typeof URL.parse === 'undefined') {
+            URL.parse = function(url, base) {
+                try { return new URL(url, base); } catch (e) { return null; }
+            };
+        }
+        if (typeof Promise.withResolvers === 'undefined') {
+            Promise.withResolvers = function() {
+                let resolve, reject;
+                const promise = new Promise(function(res, rej) { resolve = res; reject = rej; });
+                return { promise: promise, resolve: resolve, reject: reject };
+            };
+        }
+        if (typeof Promise.try === 'undefined') {
+            Promise.try = function(fn) {
+                var args = Array.prototype.slice.call(arguments, 1);
+                return new Promise(function(resolve, reject) {
+                    try { resolve(fn.apply(undefined, args)); } catch (e) { reject(e); }
+                });
+            };
+        }
+        if (!Uint8Array.prototype.toHex) {
+            Uint8Array.prototype.toHex = function() {
+                return Array.prototype.map.call(this, function(byte) {
+                    return ('0' + (byte & 0xFF).toString(16)).slice(-2);
+                }).join('');
+            };
+        }
+        if (!Uint8Array.fromHex) {
+            Uint8Array.fromHex = function(hexString) {
+                var bytes = new Uint8Array(hexString.length / 2);
+                for (var i = 0; i < hexString.length; i += 2) {
+                    bytes[i / 2] = parseInt(hexString.substring(i, i + 2), 16);
+                }
+                return bytes;
+            };
+        }
+        if (!Map.prototype.getOrInsertComputed) {
+            Map.prototype.getOrInsertComputed = function(key, callback) {
+                if (this.has(key)) { return this.get(key); }
+                const value = callback(key);
+                this.set(key, value);
+                return value;
+            };
+        }
+        if (typeof ReadableStream !== 'undefined' && !ReadableStream.prototype[Symbol.asyncIterator]) {
+            ReadableStream.prototype[Symbol.asyncIterator] = async function* () {
+                const reader = this.getReader();
+                try {
+                    while (true) {
+                        const { done, value } = await reader.read();
+                        if (done) break;
+                        yield value;
+                    }
+                } finally {
+                    reader.releaseLock();
+                }
+            };
+        }
+    </script>
     <style>
         @media print {
             .no-print {

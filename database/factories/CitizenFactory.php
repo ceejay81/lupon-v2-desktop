@@ -18,8 +18,8 @@ class CitizenFactory extends Factory
     {
         return [
             'name' => fake()->name(),
-            'purok' => 'Purok ' . fake()->numberBetween(1, 10),
-            'address' => 'Brgy. ' . fake()->streetName() . ', ' . fake()->city(),
+            'purok' => 'Purok '.fake()->numberBetween(1, 10),
+            'address' => 'Brgy. '.fake()->streetName().', '.fake()->city(),
             'phone' => fake()->numerify('09#########'),
         ];
     }

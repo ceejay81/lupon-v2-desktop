@@ -1,4 +1,4 @@
-const { app, BrowserWindow, Tray, Menu, nativeImage, dialog } = require('electron');
+const { app, BrowserWindow, Tray, Menu, nativeImage, dialog, shell, ipcMain } = require('electron');
 const { spawn, execSync } = require('child_process');
 const path = require('path');
 const net = require('net');
@@ -6,6 +6,9 @@ const http = require('http');
 const fs = require('fs');
 const crypto = require('crypto');
 const treeKill = require('tree-kill');
+
+// Enable Chromium Print Preview
+app.commandLine.appendSwitch('enable-print-preview');
 
 // ─── Config ───────────────────────────────────────────────────────────────────
 const isDev = !app.isPackaged;
@@ -168,6 +171,7 @@ function setupProductionEnv(port) {
     }
 
     log('Production environment ready.');
+    return appKey;
 }
 
 // ─── Wait for Laravel to respond ──────────────────────────────────────────────
@@ -191,7 +195,7 @@ function waitForLaravel(port, retries = 40, delay = 500) {
 }
 
 // ─── Spawn Laravel ────────────────────────────────────────────────────────────
-function startLaravel(port) {
+function startLaravel(port, appKey) {
     return new Promise((resolve, reject) => {
         log(`Starting Laravel: ${phpBin} artisan serve --port=${port} --host=127.0.0.1`);
         log(`Working directory: ${rootPath}`);
@@ -208,7 +212,11 @@ function startLaravel(port) {
                 APP_DEBUG: isDev ? 'true' : 'false',
                 DB_DATABASE: dbPath,
                 ...(isDev ? {} : {
+                    APP_KEY: appKey,
                     APP_STORAGE_PATH: storagePath,
+                    SESSION_FILES: `${storagePath.replace(/\\/g, '/')}/framework/sessions`,
+                    CACHE_STORE_PATH: `${storagePath.replace(/\\/g, '/')}/framework/cache/data`,
+                    LOG_PATH: `${storagePath.replace(/\\/g, '/')}/logs/laravel.log`,
                 }),
             },
         });
@@ -253,7 +261,7 @@ function startLaravel(port) {
                 // Auto-restart after 2 seconds if not quitting
                 setTimeout(() => {
                     if (!isQuitting) {
-                        startLaravel(port).catch(err => {
+                        startLaravel(port, appKey).catch(err => {
                             logError(`Restart failed: ${err.message}`);
                         });
                     }
@@ -317,7 +325,8 @@ function createWindow(port) {
                     webPreferences: {
                         nodeIntegration: false,
                         contextIsolation: true,
-                        sandbox: true
+                        // Share session with main window so authentication works
+                        partition: mainWindow.webContents.session.name || 'persist:main'
                     }
                 }
             };
@@ -466,15 +475,27 @@ if (!gotTheLock) {
             log(`isDev: ${isDev}`);
             log(`isPackaged: ${app.isPackaged}`);
 
+            // 0.5. Register IPC handlers
+            ipcMain.handle('open-file', async (event, filePath) => {
+                if (!filePath || typeof filePath !== 'string') {
+                    return { error: 'Invalid file path.' };
+                }
+                if (!fs.existsSync(filePath)) {
+                    return { error: `File not found: ${filePath}` };
+                }
+                const errorMsg = await shell.openPath(filePath);
+                return errorMsg ? { error: errorMsg } : { success: true };
+            });
+
             // 1. Find a free port
             appPort = await findFreePort(8000);
             log(`Using port: ${appPort}`);
 
             // 2. Setup environment
-            setupProductionEnv(appPort);
+            const appKey = setupProductionEnv(appPort);
 
             // 3. Start Laravel
-            await startLaravel(appPort);
+            await startLaravel(appPort, appKey);
             log('Laravel process spawned successfully');
 
             // 4. Wait for Laravel to respond to HTTP

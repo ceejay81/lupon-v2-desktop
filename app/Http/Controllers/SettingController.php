@@ -38,11 +38,20 @@ class SettingController extends Controller
     }
 
     /**
-     * Update user security settings (Email & Password).
+     * Update user security settings (Name, Email & Password).
      */
     public function updateSecurity(\Illuminate\Http\Request $request)
     {
         $user = auth()->user();
+
+        if ($request->filled('name')) {
+            $request->validate([
+                'name' => 'required|string|max:255',
+            ]);
+            $user->update(['name' => $request->name]);
+
+            return redirect()->route('settings.index', ['#security'])->with('message', 'Name updated successfully.');
+        }
 
         if ($request->filled('email')) {
             $request->validate([
@@ -72,6 +81,14 @@ class SettingController extends Controller
     {
         $action = $request->input('action');
 
+        // Debug logging
+        \Illuminate\Support\Facades\Log::info('Maintenance action called', [
+            'action' => $action,
+            'method' => $request->method(),
+            'has_file' => $request->hasFile('backup_file'),
+            'all_inputs' => $request->except(['backup_file']),
+        ]);
+
         try {
             // Safety Check: Ensure we are on SQLite
             if (config('database.default') !== 'sqlite') {
@@ -79,7 +96,7 @@ class SettingController extends Controller
             }
 
             if ($action === 'backup') {
-                $dbPath = database_path('database.sqlite');
+                $dbPath = config('database.connections.sqlite.database');
                 $timestamp = now()->format('Y-m-d_H-i-s');
                 $filename = 'lupon_backup_'.$timestamp.'.zip';
                 $dest = storage_path('app/backups/'.$filename);
@@ -193,7 +210,7 @@ class SettingController extends Controller
                 }
 
                 // 3. Emergency Snapshot (Rollback)
-                $dbPath = database_path('database.sqlite');
+                $dbPath = config('database.connections.sqlite.database');
                 $safetyZip = storage_path('app/backups/EMERGENCY_ROLLBACK_'.now()->format('Y-m-d_H-i-s').'.zip');
 
                 $safety = new \ZipArchive;
@@ -300,6 +317,12 @@ class SettingController extends Controller
                 return redirect()->route('settings.index', ['#maintenance'])->with('warning', "$deletedCount backup files removed successfully.");
             }
         } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Maintenance action failed', [
+                'action' => $action,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
             return redirect()->route('settings.index', ['#maintenance'])->with('error', 'System Maintenance Error: '.$e->getMessage());
         }
 

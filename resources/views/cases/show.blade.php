@@ -127,16 +127,6 @@
                         <span class="overview-value">{{ $case->documents->count() }} files</span>
                     </div>
                 </div>
-                
-                <div class="overview-card">
-                    <div class="overview-icon">
-                        <i class="ph ph-chart-pie"></i>
-                    </div>
-                    <div class="overview-content">
-                        <span class="overview-label">Compliance</span>
-                        <span class="overview-value">{{ number_format($case->percentage_of_compliance, 1) }}%</span>
-                    </div>
-                </div>
 
             </div>
 
@@ -149,7 +139,7 @@
                     </button>
                     <button class="case-tab" data-tab="documents">
                         <i class="ph ph-folder"></i>
-                        Barangay Forms
+                        Documents
                     </button>
                     <button class="case-tab" data-tab="pangkat">
                         <i class="ph ph-users-three"></i>
@@ -205,10 +195,9 @@
                     {{-- Documents Tab --}}
                     <div class="case-tab-panel" id="documents-panel">
                         <div class="tab-header">
-                            <h3>Barangay Forms</h3>
-                            <span style="font-size:0.8rem; color:var(--text-secondary);">Click Generate to preview a pre-filled printable form</span>
+                            <h3>Case Documents</h3>
                         </div>
-                        @include('cases.partials.document-export-panel')
+                        @livewire('document-manager', ['case_id' => $case->id])
                     </div>
 
                     {{-- Pangkat Tab --}}

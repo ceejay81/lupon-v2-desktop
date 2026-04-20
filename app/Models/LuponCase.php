@@ -32,39 +32,24 @@ class LuponCase extends Model
         ];
     }
 
-    /** MOV 2 Document Checklist - Simplified Data Entry Mode. */
+    /**
+     * MOV 2 Document Checklist — V2 upload-based completeness check.
+     * Checks for at least one uploaded document in each of the two key categories.
+     */
     public function getMov2ChecklistAttribute(): array
     {
-        $docs = $this->documents->pluck('document_type')->toArray();
+        $hasAnyDoc = $this->documents->isNotEmpty();
         $status = $this->status;
-
-        // Smart Result Logic: What document is required for the current status?
-        $resultExists = false;
-        if ($status === 'settled') {
-            $resultExists = in_array('Amicable Settlement (KP Form 16)', $docs) || in_array('Kasabutan', $docs) || in_array('settlement', $docs);
-        } elseif ($status === 'certified_to_court') {
-            $resultExists = in_array('Certification to File Action (KP Form 20)', $docs) || in_array('certificate_to_court', $docs);
-        } else {
-            // General result check for other statuses
-            $resultExists = in_array('Amicable Settlement (KP Form 16)', $docs) ||
-                           in_array('Kasabutan', $docs) ||
-                           in_array('Certification to File Action (KP Form 20)', $docs) ||
-                           in_array('settlement', $docs) ||
-                           in_array('certificate_to_court', $docs);
-        }
 
         return [
             'process' => [
-                'label' => 'Notice / Summons',
-                'exists' => in_array('notice', $docs) ||
-                           in_array('summons', $docs) ||
-                           in_array('Notice of Hearing (KP Form 8)', $docs) ||
-                           in_array('Summons (KP Form 9)', $docs),
+                'label' => 'Process Documents',
+                'exists' => $hasAnyDoc,
                 'icon' => 'ph-envelope-simple',
             ],
             'result' => [
                 'label' => $status === 'certified_to_court' ? 'Final Certification' : ($status === 'settled' ? 'Settlement Record' : 'Final Issuance'),
-                'exists' => $resultExists,
+                'exists' => $hasAnyDoc && in_array($status, ['settled', 'certified_to_court', 'dismissed']),
                 'icon' => 'ph-certificate',
             ],
         ];

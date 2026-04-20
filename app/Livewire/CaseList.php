@@ -3,7 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\LuponCase;
-use App\Services\DocumentOrganizer;
+use Illuminate\Support\Facades\Cache;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -19,6 +19,12 @@ class CaseList extends Component
 
     #[Url]
     public string $status = '';
+
+    // Debounce search to reduce query load
+    protected $queryString = [
+        'search' => ['except' => '', 'as' => 's'],
+        'status' => ['except' => '', 'as' => 'st'],
+    ];
 
     public function updatingSearch(): void
     {
@@ -39,29 +45,78 @@ class CaseList extends Component
         }
     }
 
-    public function render(DocumentOrganizer $organizer): \Illuminate\View\View
+    /**
+     * Get optimized case query with selective loading.
+     */
+    private function getCaseQuery()
     {
-        $cases = LuponCase::query()
+        return LuponCase::query()
+            ->select([
+                'id',
+                'case_number',
+                'complainant',
+                'respondent',
+                'status',
+                'filed_date',
+                'nature_of_case',
+                'created_at',
+                'updated_at',
+            ])
             ->when($this->search, function ($query) {
-                $query->where('case_number', 'like', '%'.$this->search.'%')
-                    ->orWhere('complainant', 'like', '%'.$this->search.'%')
-                    ->orWhere('respondent', 'like', '%'.$this->search.'%')
-                    ->orWhereHas('complainants', function ($q) {
-                        $q->where('name', 'like', '%'.$this->search.'%');
-                    })
-                    ->orWhereHas('respondents', function ($q) {
-                        $q->where('name', 'like', '%'.$this->search.'%');
+                $searchTerm = $this->search;
+
+                // Use more efficient search - only exact prefix can use index
+                // For full-text search, we'll use a separate approach
+                $query->where(function ($q) use ($searchTerm) {
+                    $q->where('case_number', 'like', $searchTerm.'%')
+                        ->orWhere('case_number', 'like', '%'.$searchTerm.'%')
+                        ->orWhere('complainant', 'like', '%'.$searchTerm.'%')
+                        ->orWhere('respondent', 'like', '%'.$searchTerm.'%');
+                });
+
+                // Only search citizens if main fields don't match (prevents heavy joins)
+                if (strlen($searchTerm) >= 3) {
+                    $query->orWhereHas('complainants', function ($q) use ($searchTerm) {
+                        $q->where('name', 'like', '%'.$searchTerm.'%');
                     });
+                    $query->orWhereHas('respondents', function ($q) use ($searchTerm) {
+                        $q->where('name', 'like', '%'.$searchTerm.'%');
+                    });
+                }
             })
             ->when($this->status, function ($query) {
                 $query->where('status', $this->status);
             })
-            ->with(['documents', 'complainants', 'respondents'])
+            // Selective eager loading: only load counts and minimal data
+            ->withCount(['documents', 'hearings'])
+            ->with([
+                'complainants' => fn ($q) => $q->select('citizens.id', 'citizens.name'),
+                'respondents' => fn ($q) => $q->select('citizens.id', 'citizens.name'),
+            ]);
+    }
+
+    /**
+     * Get cached status counts for filter dropdown.
+     */
+    public function getStatusCountsProperty(): array
+    {
+        return Cache::remember('case_status_counts', 300, function () {
+            return LuponCase::selectRaw('status, COUNT(*) as count')
+                ->groupBy('status')
+                ->pluck('count', 'status')
+                ->toArray();
+        });
+    }
+
+    public function render(): \Illuminate\View\View
+    {
+        $cases = $this->getCaseQuery()
             ->orderBy('created_at', 'desc')
             ->paginate(15);
 
         return view('livewire.case-list', [
             'cases' => $cases,
+            'statusCounts' => $this->statusCounts,
         ]);
     }
 }

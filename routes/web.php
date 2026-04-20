@@ -28,15 +28,32 @@ Route::middleware('auth')->group(function () {
     Route::resource('cases', App\Http\Controllers\LuponCaseController::class)->only(['index', 'create', 'show', 'edit', 'destroy']);
     Route::post('cases/{case}/update-status', [App\Http\Controllers\LuponCaseController::class, 'updateStatus'])->name('cases.update-status');
 
+    // Case Document Uploads (Version 2)
+    Route::post('cases/{case}/documents', [App\Http\Controllers\DocumentUploadController::class, 'store'])->name('cases.documents.store');
+    Route::delete('cases/{case}/documents/{document}', [App\Http\Controllers\DocumentUploadController::class, 'destroy'])->name('cases.documents.destroy');
+    Route::get('cases/{case}/documents/{document}/download', [App\Http\Controllers\DocumentUploadController::class, 'download'])->name('cases.documents.download');
+    Route::get('cases/{case}/documents/{document}/open', [App\Http\Controllers\DocumentUploadController::class, 'open'])->name('cases.documents.open');
+    Route::get('documents/{document}/view-pdf', [App\Http\Controllers\PDFViewerController::class, 'viewDocument'])->name('pdf-viewer.document');
+    Route::get('documents/{document}/stream-pdf', [App\Http\Controllers\PDFViewerController::class, 'streamDocument'])->name('pdf-viewer.stream-document');
+
     // Hearings
     Route::resource('hearings', App\Http\Controllers\HearingController::class)->only(['index', 'create', 'show']);
 
     // Folderized Reports (MOV 2)
     Route::get('folderized-reports', [App\Http\Controllers\FolderizedReportController::class, 'index'])->name('folderized-reports.index');
+    Route::get('folderized-reports/older', [App\Http\Controllers\FolderizedReportController::class, 'fetchOlder'])->name('folderized-reports.older');
 
-    // Reports (Form 1)
+    // Reports (Form 1) — index (Dashboard)
     Route::get('reports', [App\Http\Controllers\ReportController::class, 'index'])->name('reports.index');
-    Route::get('reports/{type}', [App\Http\Controllers\ReportController::class, 'show'])->name('reports.show');
+
+    // Monthly Reports Uploads (Version 2)
+    Route::post('reports/upload', [App\Http\Controllers\ReportUploadController::class, 'store'])->name('reports.upload');
+    Route::delete('reports/{report}', [App\Http\Controllers\ReportUploadController::class, 'destroy'])->name('reports.destroy');
+    Route::post('reports/{report}/replace', [App\Http\Controllers\ReportUploadController::class, 'replace'])->name('reports.replace');
+    Route::get('reports/{report}/download', [App\Http\Controllers\ReportUploadController::class, 'download'])->name('reports.download');
+    Route::get('reports/{report}/open', [App\Http\Controllers\ReportUploadController::class, 'open'])->name('reports.open');
+    Route::get('reports/{report}/view-pdf', [App\Http\Controllers\PDFViewerController::class, 'viewReport'])->name('pdf-viewer.report');
+    Route::get('reports/{report}/stream-pdf', [App\Http\Controllers\PDFViewerController::class, 'streamReport'])->name('pdf-viewer.stream-report');
 
     // Settings & Personnel Management
     Route::get('settings', [App\Http\Controllers\SettingController::class, 'index'])->name('settings.index');
@@ -59,27 +76,6 @@ Route::middleware('auth')->group(function () {
 
     // Citizen Registry
     Route::resource('citizens', App\Http\Controllers\CitizenController::class);
-
-    // KP Document Exports
-    Route::prefix('cases/{case}/export')->name('cases.export.')->group(function () {
-        Route::get('notice-of-hearing', [App\Http\Controllers\DocumentExportController::class, 'noticeOfHearing'])->name('notice-of-hearing');
-        Route::get('summon', [App\Http\Controllers\DocumentExportController::class, 'summon'])->name('summon');
-        Route::get('invitation-notice', [App\Http\Controllers\DocumentExportController::class, 'invitationNotice'])->name('invitation-notice');
-        Route::get('amicable-settlement', [App\Http\Controllers\DocumentExportController::class, 'amicableSettlement'])->name('amicable-settlement');
-        Route::get('kasabutan', [App\Http\Controllers\DocumentExportController::class, 'kasabutan'])->name('kasabutan');
-        Route::get('certificate-to-file-action', [App\Http\Controllers\DocumentExportController::class, 'certificateToFileAction'])->name('certificate-to-file-action');
-        Route::get('status-of-case', [App\Http\Controllers\DocumentExportController::class, 'statusOfCase'])->name('status-of-case');
-        Route::get('endorsement', [App\Http\Controllers\DocumentExportController::class, 'endorsement'])->name('endorsement');
-        Route::post('save-content', [App\Http\Controllers\DocumentExportController::class, 'saveContent'])->name('save-content');
-        Route::post('update-from-document', [App\Http\Controllers\LuponCaseController::class, 'updateFromDocument'])->name('update-from-document');
-        Route::post('toggle-step-completion', [App\Http\Controllers\LuponCaseController::class, 'toggleStepCompletion'])->name('toggle-step-completion');
-    });
-
-    // Reports persistence & finalization
-    Route::post('reports/save-content', [App\Http\Controllers\ReportController::class, 'saveContent'])->name('reports.save-content');
-    Route::post('reports/finalize', [App\Http\Controllers\ReportController::class, 'finalize'])->name('reports.finalize');
-    Route::get('reports/print/{report}', [App\Http\Controllers\ReportController::class, 'printReport'])->name('reports.print');
-    Route::get('reports/print-template/{name}', [App\Http\Controllers\ReportController::class, 'printTemplate'])->name('reports.print-template');
 
     // Media Proxy (Bypasses storage symlink for .exe portability)
     Route::get('media/{path}', [\App\Http\Controllers\MediaController::class, 'show'])

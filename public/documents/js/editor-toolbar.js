@@ -8,7 +8,7 @@ let isDirty = false;
 let autoSaveTimeout = null;
 const AUTO_SAVE_DELAY = 15000; // 15 seconds
 
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
     // 1. Inject the HTML Ribbon at the top of the body
     const ribbonHTML = `
     <div class="ribbon" id="toolbar">
@@ -106,7 +106,7 @@ document.addEventListener("DOMContentLoaded", function() {
         </div>
     </div>
     `;
-    
+
     // Prepend the ribbon to the body
     document.body.insertAdjacentHTML('afterbegin', ribbonHTML);
 
@@ -117,7 +117,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const docBody = document.getElementById('doc-body');
     if (docBody) {
         // Double-click to type anywhere (like MS Word)
-        docBody.addEventListener('dblclick', function(e) {
+        docBody.addEventListener('dblclick', function (e) {
             if (e.target !== docBody) return;
             const rect = docBody.getBoundingClientRect();
             const y = e.clientY - rect.top;
@@ -129,7 +129,7 @@ document.addEventListener("DOMContentLoaded", function() {
             newBlock.style.left = x + 'px';
             newBlock.style.minWidth = '50px';
             newBlock.style.minHeight = '1.2em';
-            newBlock.innerHTML = '&nbsp;'; 
+            newBlock.innerHTML = '&nbsp;';
             docBody.appendChild(newBlock);
 
             const sel = window.getSelection();
@@ -139,12 +139,12 @@ document.addEventListener("DOMContentLoaded", function() {
             sel.removeAllRanges();
             sel.addRange(range);
             newBlock.focus();
-            
+
             markDirty();
         });
 
         // Input listener to detect changes
-        docBody.addEventListener('input', function() {
+        docBody.addEventListener('input', function () {
             markDirty();
         });
     }
@@ -159,30 +159,30 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 // Run execCommand and keep focus
-window.cmd = function(command, value=null) {
+window.cmd = function (command, value = null) {
     document.execCommand(command, false, value);
     const editable = document.getElementById('doc-body');
-    if(editable) {
+    if (editable) {
         editable.focus();
         markDirty();
     }
 };
 
 // Highlight active buttons
-window.updateActiveStates = function() {
-    const toggleCmds = ['bold','italic','underline','strikeThrough',
-                        'justifyLeft','justifyCenter','justifyRight','justifyFull'];
-    toggleCmds.forEach(function(c) {
+window.updateActiveStates = function () {
+    const toggleCmds = ['bold', 'italic', 'underline', 'strikeThrough',
+        'justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull'];
+    toggleCmds.forEach(function (c) {
         const btn = document.getElementById('btn-' + c);
         if (btn) btn.classList.toggle('active', document.queryCommandState(c));
     });
 };
 
 // Image Preview Logic
-window.previewImage = function(input, imgId) {
+window.previewImage = function (input, imgId) {
     if (input.files && input.files[0]) {
         var reader = new FileReader();
-        reader.onload = function(e) {
+        reader.onload = function (e) {
             document.getElementById(imgId).src = e.target.result;
             markDirty();
         }
@@ -191,15 +191,15 @@ window.previewImage = function(input, imgId) {
 };
 
 // Save Changes Logic (Handles both Cases and Reports)
-window.saveDocumentChanges = function(isAuto = false) {
+window.saveDocumentChanges = function (isAuto = false) {
     const btn = document.getElementById('btn-save-case');
     const originalText = btn ? btn.innerHTML : "💾 Save Document";
     const saveStatus = document.getElementById('save-status');
-    
+
     // Collect the entire HTML body instead of just fields
     const docBody = document.getElementById('doc-body');
     if (!docBody) return;
-    
+
     const content = docBody.innerHTML;
 
     if (!isAuto && btn) {
@@ -229,53 +229,53 @@ window.saveDocumentChanges = function(isAuto = false) {
         },
         body: JSON.stringify(payload)
     })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            isDirty = false;
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                isDirty = false;
+                if (!isAuto && btn) {
+                    btn.innerHTML = "✅ Saved!";
+                    btn.style.background = "#059669";
+                    setTimeout(() => {
+                        btn.innerHTML = originalText;
+                        btn.style.background = "#16a34a";
+                        btn.disabled = false;
+                    }, 2000);
+                } else {
+                    if (saveStatus) {
+                        const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                        saveStatus.innerHTML = "Last autosaved at " + time;
+                    }
+                }
+            } else {
+                throw new Error(data.message || 'Saving failed');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
             if (!isAuto && btn) {
-                btn.innerHTML = "✅ Saved!";
-                btn.style.background = "#059669";
+                alert('Error saving changes: ' + error.message);
+                btn.innerHTML = "❌ Error";
+                btn.style.background = "#dc2626";
                 setTimeout(() => {
                     btn.innerHTML = originalText;
                     btn.style.background = "#16a34a";
                     btn.disabled = false;
-                }, 2000);
+                }, 3000);
             } else {
-                if (saveStatus) {
-                    const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                    saveStatus.innerHTML = "Last autosaved at " + time;
-                }
+                if (saveStatus) saveStatus.innerHTML = "<span style='color: #ef4444;'>Autosave failed</span>";
             }
-        } else {
-            throw new Error(data.message || 'Saving failed');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        if (!isAuto && btn) {
-            alert('Error saving changes: ' + error.message);
-            btn.innerHTML = "❌ Error";
-            btn.style.background = "#dc2626";
-            setTimeout(() => {
-                btn.innerHTML = originalText;
-                btn.style.background = "#16a34a";
-                btn.disabled = false;
-            }, 3000);
-        } else {
-            if (saveStatus) saveStatus.innerHTML = "<span style='color: #ef4444;'>Autosave failed</span>";
-        }
-    });
+        });
 };
 
 function markDirty() {
     isDirty = true;
     const saveStatus = document.getElementById('save-status');
     if (saveStatus) saveStatus.innerHTML = "<i>Unsaved changes...</i>";
-    
+
     // Clear existing timeout
     if (autoSaveTimeout) clearTimeout(autoSaveTimeout);
-    
+
     // Set new timeout for auto-save
     autoSaveTimeout = setTimeout(() => {
         if (isDirty) {
