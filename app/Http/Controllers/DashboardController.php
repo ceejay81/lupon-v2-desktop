@@ -59,7 +59,7 @@ class DashboardController extends Controller
             ->get();
 
         // CFA preview - minimal data
-        $cfaPreview = LuponCase::select(['id', 'case_number', 'complainant', 'respondent', 'status', 'created_at'])
+        $cfaPreview = LuponCase::select(['id','case_number','complainant','respondent','status','created_at','updated_at'])
             ->where('status', 'certified_to_court')
             ->with([
                 'complainants' => fn ($q) => $q->select('citizens.id', 'citizens.name'),
