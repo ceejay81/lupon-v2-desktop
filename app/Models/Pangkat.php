@@ -23,18 +23,8 @@ class Pangkat extends Model
         return $this->belongsTo(LuponCase::class);
     }
 
-    public function chairperson()
+    public function members()
     {
-        return $this->belongsTo(LuponMember::class, 'chairperson_id');
-    }
-
-    public function secretary()
-    {
-        return $this->belongsTo(LuponMember::class, 'secretary_id');
-    }
-
-    public function member()
-    {
-        return $this->belongsTo(LuponMember::class, 'member_id');
+        return $this->belongsToMany(LuponMember::class, 'pangkat_member');
     }
 }

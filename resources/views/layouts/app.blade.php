@@ -282,47 +282,7 @@
         });
     </script>
 
-    <script>
-        /**
-         * Secret Console Helper
-         * Usage: unlockBranding('LUPON-PREMIUM-2026')
-         */
-        window.unlockBranding = (code) => {
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = '{{ route("settings.unlock-branding") }}';
-            
-            const csrfInput = document.createElement('input');
-            csrfInput.type = 'hidden';
-            csrfInput.name = '_token';
-            csrfInput.value = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-            
-            const codeInput = document.createElement('input');
-            codeInput.type = 'hidden';
-            codeInput.name = 'code';
-            codeInput.value = code;
-            
-            form.appendChild(csrfInput);
-            form.appendChild(codeInput);
-            document.body.appendChild(form);
-            form.submit();
-        }
 
-        window.lockBranding = () => {
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = '{{ route("settings.lock-branding") }}';
-            
-            const csrfInput = document.createElement('input');
-            csrfInput.type = 'hidden';
-            csrfInput.name = '_token';
-            csrfInput.value = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-            
-            form.appendChild(csrfInput);
-            document.body.appendChild(form);
-            form.submit();
-        }
-    </script>
 
     @stack('modals')
     @stack('scripts')

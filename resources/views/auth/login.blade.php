@@ -89,7 +89,6 @@
                     <button type="submit" class="login-btn">Sign In</button>
                 </form>
 
-
                 <!-- Footer -->
                 <div class="login-footer">
                     <p>Authorized personnel only. <a href="#">Contact Barangay Admin</a></p>

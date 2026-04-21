@@ -32,7 +32,6 @@ class ProductionSeeder extends Seeder
             'barangay_captain' => 'Hon. Nicanora T. Vargas',
             'lupon_president' => 'Jimuel Villote',
             'committee_peace_order' => 'Dante Granada',
-            'is_branding_enabled' => '1',
             'app_version' => '2.0.0-Stable',
         ];
 

@@ -13,15 +13,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        User::factory()->create([
-            'name' => 'Juana Bula',
-            'email' => 'admin@bula.gov.ph',
-            'password' => bcrypt('password'),
-        ]);
-
         $this->call([
-            SettingSeeder::class,
-            LuponMemberSeeder::class,
+            ProductionSeeder::class,
         ]);
     }
 }

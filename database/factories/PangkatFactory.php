@@ -13,9 +13,6 @@ class PangkatFactory extends Factory
     {
         return [
             'lupon_case_id' => null,
-            'chairperson_id' => null,
-            'secretary_id' => null,
-            'member_id' => null,
             'assigned_at' => now(),
         ];
     }

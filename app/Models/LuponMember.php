@@ -18,4 +18,9 @@ class LuponMember extends Model
             'is_active' => 'boolean',
         ];
     }
+
+    public function pangkats()
+    {
+        return $this->belongsToMany(Pangkat::class, 'pangkat_member');
+    }
 }

@@ -63,11 +63,6 @@ Route::middleware('auth')->group(function () {
     Route::get('settings/maintenance/download', [App\Http\Controllers\SettingController::class, 'maintenance'])->name('settings.maintenance.download');
     Route::post('settings/maintenance/restore', [App\Http\Controllers\SettingController::class, 'maintenance'])->name('settings.maintenance.restore');
 
-    // Hidden Branding (Unlock and Update)
-    Route::post('settings/unlock-branding', [App\Http\Controllers\SettingController::class, 'unlockBranding'])->name('settings.unlock-branding');
-    Route::post('settings/lock-branding', [App\Http\Controllers\SettingController::class, 'lockBranding'])->name('settings.lock-branding');
-    Route::post('settings/branding', [App\Http\Controllers\SettingController::class, 'updateBranding'])->name('settings.update-branding');
-
     // Lupon Members CRUD
     Route::post('settings/members', [App\Http\Controllers\SettingController::class, 'storeMember'])->name('settings.members.store');
     Route::put('settings/members/{member}', [App\Http\Controllers\SettingController::class, 'updateMember'])->name('settings.members.update');

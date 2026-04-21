@@ -215,7 +215,34 @@
 
         {{-- Right Column - Sidebar --}}
         <div class="case-sidebar-column">
-            
+
+            {{-- SLA Status Card --}}
+            <div class="sidebar-card">
+                <div class="sidebar-card-header">
+                    <h3><i class="ph ph-timer"></i> SLA Deadline</h3>
+                </div>
+                <div class="sidebar-card-body">
+                    @php $slaState = $slaData['state']; @endphp
+                    <div class="sla-{{ $slaState }}">
+                        @if($slaState === 'resolved')
+                            <span class="kp-sla-resolved"><i class="ph ph-check-circle"></i> Resolved</span>
+                            <p style="font-size:0.8rem;color:var(--text-muted);margin-top:0.25rem;">This case has been resolved.</p>
+                        @elseif($slaState === 'overdue')
+                            <span class="kp-sla-overdue"><i class="ph ph-warning-circle"></i> Overdue</span>
+                            <p style="font-size:0.8rem;color:var(--text-muted);margin-top:0.25rem;">{{ $slaData['days_overdue'] }} day(s) overdue.</p>
+                        @elseif($slaState === 'approaching')
+                            <span class="kp-sla-approaching"><i class="ph ph-clock"></i> Approaching Deadline</span>
+                            <p style="font-size:0.8rem;color:var(--text-muted);margin-top:0.25rem;">{{ $slaData['days_remaining'] }} day(s) remaining.</p>
+                        @elseif($slaState === 'post_mediation')
+                            <span class="kp-sla-post-mediation"><i class="ph ph-arrows-clockwise"></i> Post-Mediation</span>
+                        @else
+                            <span class="kp-sla-on-track"><i class="ph ph-check"></i> On Track</span>
+                            <p style="font-size:0.8rem;color:var(--text-muted);margin-top:0.25rem;">{{ $slaData['days_remaining'] }} day(s) remaining.</p>
+                        @endif
+                    </div>
+                </div>
+            </div>
+
             {{-- Parties Information --}}
             <div class="sidebar-card">
                 <div class="sidebar-card-header">

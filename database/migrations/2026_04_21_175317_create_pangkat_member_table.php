@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pangkats', function (Blueprint $table) {
+        Schema::create('pangkat_member', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('lupon_case_id')->constrained()->cascadeOnDelete();
-            $table->timestamp('assigned_at')->nullable();
+            $table->foreignId('pangkat_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('lupon_member_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
         });
     }
@@ -24,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('pangkats');
+        Schema::dropIfExists('pangkat_member');
     }
 };

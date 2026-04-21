@@ -30,9 +30,7 @@ class LuponCaseController extends Controller
         $case->load([
             'complainants',
             'respondents',
-            'pangkats.chairperson',
-            'pangkats.secretary',
-            'pangkats.member',
+            'pangkats.members',
             'hearings.attendances',
             'documents',
             'statusHistories.changedBy',

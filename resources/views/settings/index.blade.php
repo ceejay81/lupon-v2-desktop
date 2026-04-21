@@ -38,15 +38,6 @@
 
 
 
-        @if(\App\Models\Setting::get('is_branding_enabled'))
-
-        <button class="settings-tab-btn" data-tab="branding" onclick="switchTab('branding')">
-
-            <i class="ph ph-paint-brush"></i> Premium Branding
-
-        </button>
-
-        @endif
 
     </nav>
 
@@ -60,7 +51,7 @@
 
     @include('settings.partials.maintenance')
 
-    @include('settings.partials.branding')
+
 
 
 
