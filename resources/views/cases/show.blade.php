@@ -45,9 +45,6 @@
                                 style="border: none; cursor: pointer; outline: none; appearance: none; padding-right: 1.5rem; font-family: inherit; font-size: inherit; font-weight: inherit; text-transform: inherit;">
                                 <option value="filed" {{ $case->status == 'filed' ? 'selected' : '' }}
                                     style="color: #000; background: #fff;">Filed</option>
-                                <option value="under_mediation" {{ $case->status == 'under_mediation' ? 'selected' : '' }}
-                                    style="color: #000; background: #fff;">Mediation</option>
-                                <option value="under_conciliation" {{ $case->status == 'under_conciliation' ? 'selected' : '' }} style="color: #000; background: #fff;">Conciliation</option>
                                 <option value="under_arbitration" {{ $case->status == 'under_arbitration' ? 'selected' : '' }}
                                     style="color: #000; background: #fff;">Arbitration</option>
                                 <option value="settled" {{ $case->status == 'settled' ? 'selected' : '' }}
@@ -55,8 +52,6 @@
                                 <option value="certified_to_court" {{ $case->status == 'certified_to_court' ? 'selected' : '' }} style="color: #000; background: #fff;">Certified to Court</option>
                                 <option value="dismissed" {{ $case->status == 'dismissed' ? 'selected' : '' }}
                                     style="color: #000; background: #fff;">Dismissed</option>
-                                <option value="archived" {{ $case->status == 'archived' ? 'selected' : '' }}
-                                    style="color: #000; background: #fff;">Archived</option>
                             </select>
                             <i class="ph ph-caret-down"
                                 style="position: absolute; right: 0.5rem; top: 50%; transform: translateY(-50%); font-size: 0.85rem; pointer-events: none; opacity: 0.8;"></i>
@@ -95,20 +90,6 @@
             {{-- Left Column - Main Content --}}
             <div class="case-main-column">
 
-                {{-- Overdue Banner --}}
-                @if($slaData['state'] === 'overdue')
-                    <div x-data="{ show: true }" x-show="show" class="sla-overdue-banner alert alert-danger" role="alert">
-                        <div class="sla-overdue-banner-content">
-                            <i class="ph ph-warning-circle"></i>
-                            <span>This case is overdue by {{ $slaData['days_overdue'] }} day(s). Immediate action
-                                required.</span>
-                        </div>
-                        <button @click="show = false" class="sla-overdue-banner-dismiss" aria-label="Dismiss overdue warning">
-                            <i class="ph ph-x"></i>
-                        </button>
-                    </div>
-                @endif
-
                 {{-- Case Overview Cards --}}
                 <div class="overview-cards">
                     <div class="overview-card">
@@ -121,16 +102,6 @@
                                 @php $nextHearing = $case->hearings()->where('scheduled_at', '>', now())->orderBy('scheduled_at')->first(); @endphp
                                 {{ $nextHearing ? $nextHearing->scheduled_at->format('M d, Y') : 'None scheduled' }}
                             </span>
-                        </div>
-                    </div>
-
-                    <div class="overview-card">
-                        <div class="overview-icon">
-                            <i class="ph ph-clock"></i>
-                        </div>
-                        <div class="overview-content">
-                            <span class="overview-label">Days Active</span>
-                            <span class="overview-value">{{ $case->no_of_days_in_barangay }} days</span>
                         </div>
                     </div>
 
@@ -347,12 +318,6 @@
                     <div class="sidebar-card-body">
                         <div class="blotter-grid">
                             <div class="blotter-item">
-                                <span class="blotter-label">Service of Summon</span>
-                                <span
-                                    class="blotter-value">{{ $case->date_of_service_summon?->format('M d, Y') ?? '—' }}</span>
-                            </div>
-
-                            <div class="blotter-item">
                                 <span class="blotter-label">1st Hearing</span>
                                 <span
                                     class="blotter-value">{{ $case->date_of_first_hearing?->format('M d, Y') ?? '—' }}</span>
@@ -361,11 +326,6 @@
                             <div class="blotter-item">
                                 <span class="blotter-label">Settlement Date</span>
                                 <span class="blotter-value">{{ $case->date_of_settlement?->format('M d, Y') ?? '—' }}</span>
-                            </div>
-
-                            <div class="blotter-item">
-                                <span class="blotter-label">Days Active</span>
-                                <span class="blotter-value">{{ $case->no_of_days_in_barangay }} days</span>
                             </div>
                         </div>
 

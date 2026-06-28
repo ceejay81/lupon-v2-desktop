@@ -215,16 +215,22 @@
                             'error' => ['type' => 'error', 'icon' => 'ph-warning-circle'],
                         ] as $key => $config)
                         @if(session($key))
-                            <div class="alert alert-{{ $config['type'] }}">
+                            <div x-data="{ show: true }" x-show="show" class="alert alert-{{ $config['type'] }}">
                                 <i class="ph {{ $config['icon'] }}"></i>
                                 <span>{{ session($key) }}</span>
-                                </div>
+                                <button @click="show = false" class="alert-dismiss-btn" aria-label="Dismiss alert">
+                                    <i class="ph ph-x"></i>
+                                </button>
+                            </div>
                         @endif
                     @endforeach
                         @if($errors->any())
-                            <div class="alert alert-error">
+                            <div x-data="{ show: true }" x-show="show" class="alert alert-error">
                                 <i class="ph ph-warning-circle"></i>
                                 <span>{{ $errors->first() }}</span>
+                                <button @click="show = false" class="alert-dismiss-btn" aria-label="Dismiss alert">
+                                    <i class="ph ph-x"></i>
+                                </button>
                             </div>
                         @endif
                     </div>
@@ -274,10 +280,19 @@
 
                 const toast = document.createElement('div');
                 toast.className = `alert alert-${type}`;
-                toast.innerHTML = `<i class="ph ${icons[type] ?? 'ph-info'}"></i><span>${message}</span>`;
+                toast.innerHTML = `<i class="ph ${icons[type] ?? 'ph-info'}"></i><span>${message}</span><button class="alert-dismiss-btn" aria-label="Dismiss alert"><i class="ph ph-x"></i></button>`;
                 container.appendChild(toast);
 
-                setTimeout(() => toast.remove(), 3900);
+                const dismissBtn = toast.querySelector('.alert-dismiss-btn');
+                dismissBtn.addEventListener('click', () => {
+                    toast.remove();
+                });
+
+                setTimeout(() => {
+                    if (toast.parentNode) {
+                        toast.remove();
+                    }
+                }, 3900);
             });
         });
     </script>

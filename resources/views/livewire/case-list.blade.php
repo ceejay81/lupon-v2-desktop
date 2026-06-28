@@ -16,8 +16,6 @@
             <select wire:model.live="status" class="form-control" style="width: 160px; font-size: 0.85rem; height: 38px;">
                 <option value="">All Statuses</option>
                 <option value="filed">Filed</option>
-                <option value="under_mediation">Mediation</option>
-                <option value="under_conciliation">Conciliation</option>
                 <option value="under_arbitration">Arbitration</option>
                 <option value="settled">Settled</option>
                 <option value="certified_to_court">Certified</option>
@@ -78,13 +76,10 @@
                             <div style="position: relative; display: inline-block;">
                                 <select wire:change="updateCaseStatus({{ $case->id }}, $event.target.value)" class="status-badge {{ $case->status_badge_class }}" style="border: none; cursor: pointer; outline: none; appearance: none; padding-right: 1.25rem;">
                                     <option value="filed" {{ $case->status == 'filed' ? 'selected' : '' }} style="color: #000; background: #fff;">Filed</option>
-                                    <option value="under_mediation" {{ $case->status == 'under_mediation' ? 'selected' : '' }} style="color: #000; background: #fff;">Mediation</option>
-                                    <option value="under_conciliation" {{ $case->status == 'under_conciliation' ? 'selected' : '' }} style="color: #000; background: #fff;">Conciliation</option>
                                     <option value="under_arbitration" {{ $case->status == 'under_arbitration' ? 'selected' : '' }} style="color: #000; background: #fff;">Arbitration</option>
                                     <option value="settled" {{ $case->status == 'settled' ? 'selected' : '' }} style="color: #000; background: #fff;">Settled</option>
                                     <option value="certified_to_court" {{ $case->status == 'certified_to_court' ? 'selected' : '' }} style="color: #000; background: #fff;">Certified to Court</option>
                                     <option value="dismissed" {{ $case->status == 'dismissed' ? 'selected' : '' }} style="color: #000; background: #fff;">Dismissed</option>
-                                    <option value="archived" {{ $case->status == 'archived' ? 'selected' : '' }} style="color: #000; background: #fff;">Archived</option>
                                 </select>
                                 <i class="ph ph-caret-down" style="position: absolute; right: 0.35rem; top: 50%; transform: translateY(-50%); font-size: 0.75rem; pointer-events: none; opacity: 0.7;"></i>
                             </div>

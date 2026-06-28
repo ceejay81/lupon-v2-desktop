@@ -30,9 +30,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Refresh hearing components reactively when a hearing is saved (no full page reload)
     if (window.Livewire) {
         Livewire.on('hearingSaved', () => {
-            if (document.querySelector('[wire\\:id]')) {
-                Livewire.all().forEach(component => component.call('$refresh'));
-            }
+            Livewire.all().forEach(component => component.$refresh());
         });
     }
 });

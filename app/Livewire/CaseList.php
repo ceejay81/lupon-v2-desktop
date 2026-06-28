@@ -65,24 +65,26 @@ class CaseList extends Component
             ->when($this->search, function ($query) {
                 $searchTerm = $this->search;
 
-                // Use more efficient search - only exact prefix can use index
-                // For full-text search, we'll use a separate approach
                 $query->where(function ($q) use ($searchTerm) {
-                    $q->where('case_number', 'like', $searchTerm.'%')
-                        ->orWhere('case_number', 'like', '%'.$searchTerm.'%')
-                        ->orWhere('complainant', 'like', '%'.$searchTerm.'%')
-                        ->orWhere('respondent', 'like', '%'.$searchTerm.'%');
-                });
+                    $q->where(function ($inner) use ($searchTerm) {
+                        $inner->where('case_number', 'like', $searchTerm.'%')
+                            ->orWhere('case_number', 'like', '%'.$searchTerm.'%')
+                            ->orWhere('complainant', 'like', '%'.$searchTerm.'%')
+                            ->orWhere('respondent', 'like', '%'.$searchTerm.'%')
+                            ->orWhere('nature_of_case', 'like', '%'.$searchTerm.'%')
+                            ->orWhere('status', 'like', '%'.$searchTerm.'%');
+                    });
 
-                // Only search citizens if main fields don't match (prevents heavy joins)
-                if (strlen($searchTerm) >= 3) {
-                    $query->orWhereHas('complainants', function ($q) use ($searchTerm) {
-                        $q->where('name', 'like', '%'.$searchTerm.'%');
-                    });
-                    $query->orWhereHas('respondents', function ($q) use ($searchTerm) {
-                        $q->where('name', 'like', '%'.$searchTerm.'%');
-                    });
-                }
+                    // Only search citizens if main fields don't match (prevents heavy joins)
+                    if (strlen($searchTerm) >= 3) {
+                        $q->orWhereHas('complainants', function ($q) use ($searchTerm) {
+                            $q->where('name', 'like', '%'.$searchTerm.'%');
+                        });
+                        $q->orWhereHas('respondents', function ($q) use ($searchTerm) {
+                            $q->where('name', 'like', '%'.$searchTerm.'%');
+                        });
+                    }
+                });
             })
             ->when($this->status, function ($query) {
                 $query->where('status', $this->status);

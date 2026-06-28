@@ -855,6 +855,24 @@ section.card {
     background-color: #1e293b;
 }
 
+.alert-dismiss-btn {
+    background: none;
+    border: none;
+    color: currentColor;
+    cursor: pointer;
+    padding: 0;
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.6;
+    transition: opacity 0.15s;
+    font-size: 1.1rem;
+}
+.alert-dismiss-btn:hover {
+    opacity: 1;
+}
+
 /* ==========================================
    MOBILE HAMBURGER (Pure CSS)
    ========================================== */

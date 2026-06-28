@@ -54,7 +54,6 @@ class CaseForm extends Component
             'nature_of_case' => 'required|string|max:255',
             'description' => 'nullable|string|max:2000',
             'filed_date' => 'required|date',
-            'date_of_service_summon' => 'nullable|date',
             'remarks' => 'nullable|string|max:1000',
         ];
     }

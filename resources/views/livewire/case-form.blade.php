@@ -117,14 +117,6 @@
                             <input wire:model="filed_date" type="date" id="filed_date">
                             @error('filed_date') <p class="error"><i class="ph ph-warning-circle"></i> {{ $message }}</p> @enderror
                         </div>
-                    </div>
-                    <div class="form-columns">
-                        <div class="form-group">
-                            <label for="date_of_service_summon">Date of Service of Summon</label>
-                            <input wire:model="date_of_service_summon" type="date" id="date_of_service_summon">
-                            <small class="text-muted">When the summon was served to the respondent</small>
-                            @error('date_of_service_summon') <p class="error"><i class="ph ph-warning-circle"></i> {{ $message }}</p> @enderror
-                        </div>
                         <div class="form-group">
                             <label for="remarks">Remarks</label>
                             <input wire:model="remarks" type="text" id="remarks" placeholder="Additional notes or observations">

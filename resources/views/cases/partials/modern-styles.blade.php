@@ -1018,6 +1018,63 @@
         border-color: #334155;
     }
     [data-theme='dark'] .hearing-day { color: var(--text-primary); }
+
+    /* Blotter Details dark mode */
+    [data-theme='dark'] .blotter-value {
+        color: var(--text-primary);
+    }
+    [data-theme='dark'] .blotter-label,
+    [data-theme='dark'] .status-label {
+        color: var(--text-muted);
+    }
+    [data-theme='dark'] .blotter-status-section {
+        border-top-color: #334155;
+    }
+    [data-theme='dark'] .detail-label,
+    [data-theme='dark'] .party-label,
+    [data-theme='dark'] .party-address,
+    [data-theme='dark'] .party-phone {
+        color: var(--text-muted);
+    }
+    [data-theme='dark'] .party-divider {
+        border-color: #334155;
+    }
+
+    /* SLA Overdue Banner override style */
+    .sla-overdue-banner {
+        position: relative !important;
+        top: auto !important;
+        right: auto !important;
+        animation: none !important;
+        max-width: 100% !important;
+        width: 100% !important;
+        margin-bottom: 1.5rem !important;
+        pointer-events: auto !important;
+        box-shadow: none !important;
+    }
+    .sla-overdue-banner-content {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        flex-grow: 1;
+    }
+    .sla-overdue-banner-dismiss {
+        background: none;
+        border: none;
+        color: currentColor;
+        cursor: pointer;
+        padding: 0;
+        margin-left: auto;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0.6;
+        transition: opacity 0.15s;
+        font-size: 1.1rem;
+    }
+    .sla-overdue-banner-dismiss:hover {
+        opacity: 1;
+    }
 </style>
 
 

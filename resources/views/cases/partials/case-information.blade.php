@@ -37,11 +37,6 @@
             </div>
             
             <div class="blotter-item">
-                <span class="blotter-label">Service of Summon</span>
-                <span class="blotter-value">{{ $case->date_of_service_summon?->format('M d, Y') ?? '—' }}</span>
-            </div>
-            
-            <div class="blotter-item">
                 <span class="blotter-label">1st Hearing Date</span>
                 <span class="blotter-value">{{ $case->date_of_first_hearing?->format('M d, Y') ?? '—' }}</span>
             </div>
@@ -49,11 +44,6 @@
             <div class="blotter-item">
                 <span class="blotter-label">Settlement Date</span>
                 <span class="blotter-value">{{ $case->date_of_settlement?->format('M d, Y') ?? '—' }}</span>
-            </div>
-            
-            <div class="blotter-item">
-                <span class="blotter-label">Days in Barangay</span>
-                <span class="blotter-value">{{ $case->no_of_days_in_barangay ?? '—' }} days</span>
             </div>
         </div>
         
