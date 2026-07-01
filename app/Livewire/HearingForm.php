@@ -110,7 +110,7 @@ class HearingForm extends Component
     public function render(): \Illuminate\View\View
     {
         $cases = LuponCase::orderByDesc('filed_date')
-            ->whereNotIn('status', ['archived', 'dismissed', 'settled', 'certified_to_court'])
+            ->whereNotIn('status', ['archived', 'dismissed', 'settled', 'certified_to_court', 'withdrawal'])
             ->get(['id', 'case_number', 'complainant', 'respondent']);
 
         return view('livewire.hearing-form', compact('cases'));

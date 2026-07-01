@@ -77,8 +77,8 @@
                 $total            = $totalComplainant + $totalRespondent;
                 $settled          = $citizen->casesAsComplainant->where('status', 'settled')->count()
                                   + $citizen->casesAsRespondent->where('status', 'settled')->count();
-                $active           = $citizen->casesAsComplainant->whereNotIn('status', ['settled','dismissed','archived'])->count()
-                                  + $citizen->casesAsRespondent->whereNotIn('status', ['settled','dismissed','archived'])->count();
+                $active           = $citizen->casesAsComplainant->whereNotIn('status', ['settled','dismissed','withdrawal','archived'])->count()
+                                  + $citizen->casesAsRespondent->whereNotIn('status', ['settled','dismissed','withdrawal','archived'])->count();
             @endphp
             <div class="card" style="padding: 1.5rem;">
                 <p style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 1rem;">

@@ -52,6 +52,8 @@
                                 <option value="certified_to_court" {{ $case->status == 'certified_to_court' ? 'selected' : '' }} style="color: #000; background: #fff;">Certified to Court</option>
                                 <option value="dismissed" {{ $case->status == 'dismissed' ? 'selected' : '' }}
                                     style="color: #000; background: #fff;">Dismissed</option>
+                                <option value="withdrawal" {{ $case->status == 'withdrawal' ? 'selected' : '' }}
+                                    style="color: #000; background: #fff;">Withdrawn</option>
                             </select>
                             <i class="ph ph-caret-down"
                                 style="position: absolute; right: 0.5rem; top: 50%; transform: translateY(-50%); font-size: 0.85rem; pointer-events: none; opacity: 0.8;"></i>

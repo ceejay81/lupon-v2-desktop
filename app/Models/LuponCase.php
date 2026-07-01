@@ -49,7 +49,7 @@ class LuponCase extends Model
             ],
             'result' => [
                 'label' => $status === 'certified_to_court' ? 'Final Certification' : ($status === 'settled' ? 'Settlement Record' : 'Final Issuance'),
-                'exists' => $hasAnyDoc && in_array($status, ['settled', 'certified_to_court', 'dismissed']),
+                'exists' => $hasAnyDoc && in_array($status, ['settled', 'certified_to_court', 'dismissed', 'withdrawal']),
                 'icon' => 'ph-certificate',
             ],
         ];
@@ -72,7 +72,7 @@ class LuponCase extends Model
             'total_hearings' => $this->hearings->count(),
             'total_documents' => $this->documents->count(),
             'has_pangkat' => $this->pangkats->isNotEmpty(),
-            'is_overdue' => $this->filed_date && \Illuminate\Support\Carbon::parse($this->filed_date)->diffInDays(now()) > 30 && ! in_array($this->status, ['settled', 'certified_to_court', 'dismissed']),
+            'is_overdue' => $this->filed_date && \Illuminate\Support\Carbon::parse($this->filed_date)->diffInDays(now()) > 30 && ! in_array($this->status, ['settled', 'certified_to_court', 'dismissed', 'withdrawal']),
         ];
     }
 
@@ -87,6 +87,7 @@ class LuponCase extends Model
             'settled' => 'Settled',
             'certified_to_court' => 'Certified to Court',
             'dismissed' => 'Dismissed',
+            'withdrawal' => 'Withdrawn',
             'archived' => 'Archived',
             default => ucfirst(str_replace('_', ' ', $this->status)),
         };
@@ -103,6 +104,7 @@ class LuponCase extends Model
             'settled' => 'badge-settled',
             'certified_to_court' => 'badge-court',
             'dismissed' => 'badge-dismissed',
+            'withdrawal' => 'badge-withdrawn',
             'archived' => 'badge-archived',
             default => 'badge-filed',
         };
@@ -128,7 +130,7 @@ class LuponCase extends Model
     {
         $pastMediationStatuses = [
             'under_conciliation', 'under_arbitration', 'settled',
-            'certified_to_court', 'dismissed',
+            'certified_to_court', 'dismissed', 'withdrawal',
         ];
 
         return in_array($this->status, $pastMediationStatuses) ||
@@ -139,7 +141,7 @@ class LuponCase extends Model
     public function getConciliationAttribute(): bool
     {
         $pastConciliationStatuses = [
-            'under_arbitration', 'settled', 'certified_to_court', 'dismissed',
+            'under_arbitration', 'settled', 'certified_to_court', 'dismissed', 'withdrawal',
         ];
 
         return in_array($this->status, $pastConciliationStatuses) ||
@@ -161,7 +163,7 @@ class LuponCase extends Model
             return ['state' => 'on_track', 'label' => 'On Track', 'days_remaining' => null, 'days_overdue' => null];
         }
 
-        $terminalStatuses = ['settled', 'certified_to_court', 'dismissed', 'archived'];
+        $terminalStatuses = ['settled', 'certified_to_court', 'dismissed', 'withdrawal', 'archived'];
         $postMediationStatuses = ['under_conciliation', 'under_arbitration'];
 
         if (in_array($this->status, $terminalStatuses)) {

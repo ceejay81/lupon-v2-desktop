@@ -11,7 +11,7 @@ class CaseStatusHistoryFactory extends Factory
 {
     public function definition(): array
     {
-        $statuses = ['filed', 'under_mediation', 'under_conciliation', 'under_arbitration', 'settled', 'certified_to_court', 'dismissed'];
+        $statuses = ['filed', 'under_mediation', 'under_conciliation', 'under_arbitration', 'settled', 'certified_to_court', 'dismissed', 'withdrawal'];
 
         return [
             'lupon_case_id' => null,

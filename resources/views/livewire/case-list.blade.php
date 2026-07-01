@@ -19,6 +19,8 @@
                 <option value="under_arbitration">Arbitration</option>
                 <option value="settled">Settled</option>
                 <option value="certified_to_court">Certified</option>
+                <option value="dismissed">Dismissed</option>
+                <option value="withdrawal">Withdrawn</option>
             </select>
 
 
@@ -80,6 +82,7 @@
                                     <option value="settled" {{ $case->status == 'settled' ? 'selected' : '' }} style="color: #000; background: #fff;">Settled</option>
                                     <option value="certified_to_court" {{ $case->status == 'certified_to_court' ? 'selected' : '' }} style="color: #000; background: #fff;">Certified to Court</option>
                                     <option value="dismissed" {{ $case->status == 'dismissed' ? 'selected' : '' }} style="color: #000; background: #fff;">Dismissed</option>
+                                    <option value="withdrawal" {{ $case->status == 'withdrawal' ? 'selected' : '' }} style="color: #000; background: #fff;">Withdrawn</option>
                                 </select>
                                 <i class="ph ph-caret-down" style="position: absolute; right: 0.35rem; top: 50%; transform: translateY(-50%); font-size: 0.75rem; pointer-events: none; opacity: 0.7;"></i>
                             </div>

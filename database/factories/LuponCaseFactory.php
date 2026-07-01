@@ -11,7 +11,7 @@ class LuponCaseFactory extends Factory
 {
     public function definition(): array
     {
-        $statuses = ['filed', 'under_mediation', 'under_conciliation', 'under_arbitration', 'settled', 'certified_to_court', 'dismissed'];
+        $statuses = ['filed', 'under_mediation', 'under_conciliation', 'under_arbitration', 'settled', 'certified_to_court', 'dismissed', 'withdrawal'];
         $status = fake()->randomElement($statuses);
         $filedDate = fake()->dateTimeBetween('-18 months', 'now');
 
@@ -41,7 +41,7 @@ class LuponCaseFactory extends Factory
             'status' => $status,
             'filed_date' => $filedDate,
             'filed_by' => null,
-            'settled_at' => in_array($status, ['settled', 'certified_to_court', 'dismissed'])
+            'settled_at' => in_array($status, ['settled', 'certified_to_court', 'dismissed', 'withdrawal'])
                 ? fake()->dateTimeBetween($filedDate, 'now')
                 : null,
             'date_of_service_summon' => fake()->optional(0.7)->dateTimeBetween($filedDate, 'now'),

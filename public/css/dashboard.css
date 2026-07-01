@@ -483,6 +483,76 @@ body {
 }
 
 /* ==========================================
+   STATUS BADGES
+   ========================================== */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: var(--radius-full);
+    font-size: 0.72rem;
+    font-weight: 700;
+    white-space: nowrap;
+    letter-spacing: 0.01em;
+}
+
+.badge-filed {
+    background-color: #eff6ff;
+    color: #3b82f6;
+}
+
+.badge-mediation {
+    background-color: #f0fdf4;
+    color: #16a34a;
+}
+
+.badge-conciliation {
+    background-color: #fef9c3;
+    color: #a16207;
+}
+
+.badge-arbitration {
+    background-color: #fff7ed;
+    color: #c2410c;
+}
+
+.badge-settled {
+    background-color: #dcfce7;
+    color: #15803d;
+}
+
+.badge-court {
+    background-color: #fef2f2;
+    color: #dc2626;
+}
+
+.badge-dismissed {
+    background-color: #f1f5f9;
+    color: #64748b;
+}
+
+.badge-withdrawn {
+    background-color: #fdf4ff;
+    color: #9333ea;
+}
+
+.badge-archived {
+    background-color: #f3f4f6;
+    color: #9ca3af;
+}
+
+/* Dark mode badge overrides */
+[data-theme="dark"] .badge-filed       { background-color: #1e3a5f; color: #93c5fd; }
+[data-theme="dark"] .badge-mediation   { background-color: #022c22; color: #4ade80; }
+[data-theme="dark"] .badge-conciliation { background-color: #1c1400; color: #fde047; }
+[data-theme="dark"] .badge-arbitration { background-color: #431407; color: #fb923c; }
+[data-theme="dark"] .badge-settled     { background-color: #022c22; color: #34d399; }
+[data-theme="dark"] .badge-court       { background-color: #2d0a0a; color: #f87171; }
+[data-theme="dark"] .badge-dismissed   { background-color: #1e293b; color: #94a3b8; }
+[data-theme="dark"] .badge-withdrawn   { background-color: #2e1065; color: #d8b4fe; }
+[data-theme="dark"] .badge-archived    { background-color: #1e293b; color: #6b7280; }
+
+/* ==========================================
    CARDS
    ========================================== */
 .card {

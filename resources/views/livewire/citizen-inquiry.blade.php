@@ -96,6 +96,7 @@
                                     'settled'            => 'badge-settled',
                                     'certified_to_court' => 'badge-court',
                                     'dismissed'          => 'badge-dismissed',
+                                    'withdrawal'         => 'badge-withdrawn',
                                     default              => 'badge-filed',
                                 };
                             @endphp
@@ -140,7 +141,7 @@
                                     &mdash; {{ $result['next_hearing']['location'] }}
                                 </p>
                             </div>
-                        @elseif(in_array($result['status_code'], ['settled', 'dismissed']))
+                        @elseif(in_array($result['status_code'], ['settled', 'dismissed', 'withdrawal']))
                             <div style="padding: 0.75rem 1rem; background: var(--success-light); border-radius: var(--radius-md); border-left: 3px solid var(--success); margin-bottom: 0.75rem;">
                                 <p style="font-size: 0.875rem; color: var(--success);">
                                     ✅ This case has been resolved. No further action needed.

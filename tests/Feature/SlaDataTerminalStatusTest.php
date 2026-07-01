@@ -21,9 +21,9 @@ class SlaDataTerminalStatusTest extends TestCase
      * For any LuponCase whose status is a terminal status, getSlaData() must
      * return state 'resolved' with both days_remaining and days_overdue null.
      */
-    public function testTerminalStatusYieldsResolvedState(): void
+    public function test_terminal_status_yields_resolved_state(): void
     {
-        $terminalStatuses = ['settled', 'certified_to_court', 'dismissed', 'archived'];
+        $terminalStatuses = ['settled', 'certified_to_court', 'dismissed', 'withdrawal', 'archived'];
 
         $this->forAll(
             Generators::elements($terminalStatuses),
@@ -33,7 +33,7 @@ class SlaDataTerminalStatusTest extends TestCase
 
             /** @var LuponCase $case */
             $case = LuponCase::factory()->create([
-                'status'     => $status,
+                'status' => $status,
                 'filed_date' => $filedDate,
                 'settled_at' => null,
             ]);
