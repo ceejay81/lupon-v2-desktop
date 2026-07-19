@@ -113,7 +113,7 @@ class CaseList extends Component
     public function render(): \Illuminate\View\View
     {
         $cases = $this->getCaseQuery()
-            ->orderBy('created_at', 'desc')
+            ->orderByRaw('CAST(case_number AS INTEGER) DESC, LENGTH(case_number) DESC, case_number DESC')
             ->paginate(15);
 
         return view('livewire.case-list', [

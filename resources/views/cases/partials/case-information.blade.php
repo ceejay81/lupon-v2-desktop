@@ -30,7 +30,7 @@
         </h2>
     </div>
     <div class="info-card-body">
-        <div class="blotter-grid">
+        <div class="blotter-grid" style="grid-template-columns: 1fr; justify-items: center; text-align: center;">
             <div class="blotter-item">
                 <span class="blotter-label">Date Filed</span>
                 <span class="blotter-value">{{ $case->filed_date->format('M d, Y') }}</span>
@@ -41,10 +41,7 @@
                 <span class="blotter-value">{{ $case->date_of_first_hearing?->format('M d, Y') ?? '—' }}</span>
             </div>
             
-            <div class="blotter-item">
-                <span class="blotter-label">Settlement Date</span>
-                <span class="blotter-value">{{ $case->date_of_settlement?->format('M d, Y') ?? '—' }}</span>
-            </div>
+
         </div>
         
         <div class="blotter-status-grid">
