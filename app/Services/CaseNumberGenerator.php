@@ -17,8 +17,9 @@ class CaseNumberGenerator
     {
         $year = Carbon::now()->year;
 
-        // Find the highest-numbered case for this year by matching the case_number prefix
-        $latestCase = LuponCase::where('case_number', 'like', "BP-{$year}-%")
+        // Find the highest-numbered case for this year by matching the case_number prefix (including soft-deleted)
+        $latestCase = LuponCase::withTrashed()
+            ->where('case_number', 'like', "BP-{$year}-%")
             ->orderByRaw('CAST(SUBSTR(case_number, -3) AS INTEGER) DESC')
             ->first();
 

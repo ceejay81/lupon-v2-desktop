@@ -10,23 +10,33 @@ class LoginController extends Controller
     /**
      * Show the login form.
      */
-    public function showLoginForm()
+    public function showLoginForm(): \Illuminate\View\View
     {
-        return view('auth.login');
+        $rememberedEmail = request()->cookie('remembered_email', '');
+
+        return view('auth.login', compact('rememberedEmail'));
     }
 
     /**
      * Handle a login request.
      */
-    public function login(Request $request)
+    public function login(Request $request): \Illuminate\Http\RedirectResponse
     {
         $credentials = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required'],
         ]);
 
-        if (auth()->attempt($credentials, $request->boolean('remember'))) {
+        $remember = $request->boolean('remember');
+
+        if (auth()->attempt($credentials, $remember)) {
             $request->session()->regenerate();
+
+            if ($remember) {
+                cookie()->queue(cookie()->forever('remembered_email', $request->email));
+            } else {
+                cookie()->queue(cookie()->forget('remembered_email'));
+            }
 
             return redirect()->intended('/');
         }

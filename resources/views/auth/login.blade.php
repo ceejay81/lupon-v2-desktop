@@ -59,7 +59,7 @@
                     <!-- Email Field -->
                     <div class="form-group">
                         <input type="email" id="email" name="email" class="form-input" placeholder="Email address"
-                            value="{{ old('email') }}" autofocus autocomplete="email">
+                            value="{{ old('email', $rememberedEmail ?? '') }}" autofocus autocomplete="email">
                         <label for="email" class="form-label">Email address</label>
                     </div>
 
@@ -79,7 +79,7 @@
                     <!-- Remember Me & Forgot Password -->
                     <div class="form-options">
                         <div class="checkbox-wrapper">
-                            <input type="checkbox" id="remember" name="remember">
+                            <input type="checkbox" id="remember" name="remember" value="1" {{ (old('remember') || !empty($rememberedEmail)) ? 'checked' : '' }}>
                             <label for="remember">Remember me</label>
                         </div>
                         <a href="{{ route('password.forgot') }}" class="forgot-link">Forgot password?</a>
@@ -112,6 +112,28 @@
                 toggleIcon.classList.add('ph-eye');
             }
         }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const emailInput = document.getElementById('email');
+            const rememberCheckbox = document.getElementById('remember');
+            const form = document.querySelector('form');
+
+            // Restore from localStorage if not already pre-filled from backend cookie
+            if (!emailInput.value && localStorage.getItem('lupon_remembered_email')) {
+                emailInput.value = localStorage.getItem('lupon_remembered_email');
+                rememberCheckbox.checked = true;
+            }
+
+            if (form) {
+                form.addEventListener('submit', function () {
+                    if (rememberCheckbox.checked && emailInput.value) {
+                        localStorage.setItem('lupon_remembered_email', emailInput.value);
+                    } else if (!rememberCheckbox.checked) {
+                        localStorage.removeItem('lupon_remembered_email');
+                    }
+                });
+            }
+        });
     </script>
 </body>
 

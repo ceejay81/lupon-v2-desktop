@@ -16,6 +16,8 @@
             <select wire:model.live="status" class="form-control" style="width: 160px; font-size: 0.85rem; height: 38px;">
                 <option value="">All Statuses</option>
                 <option value="filed">Filed</option>
+                <option value="under_mediation">Mediation</option>
+                <option value="under_conciliation">Conciliation</option>
                 <option value="under_arbitration">Arbitration</option>
                 <option value="settled">Settled</option>
                 <option value="certified_to_court">Certified</option>

@@ -115,15 +115,23 @@ function setupProductionEnv(port) {
     }
 
     // Generate or retrieve APP_KEY
+    const envPath = path.join(rootPath, '.env');
     const fallbackEnvPath = path.join(userDataPath, '.env');
     let appKey = '';
     
-    // Check if the fallback env path already has an APP_KEY
-    if (fs.existsSync(fallbackEnvPath)) {
+    // Check if the primary or fallback env path already has an APP_KEY
+    if (fs.existsSync(envPath)) {
+        const existingEnvVars = fs.readFileSync(envPath, 'utf8');
+        const keyMatch = existingEnvVars.match(/^APP_KEY=(.*)$/m);
+        if (keyMatch && keyMatch[1] && keyMatch[1].trim()) {
+            appKey = keyMatch[1].trim();
+        }
+    }
+    if (!appKey && fs.existsSync(fallbackEnvPath)) {
         const existingEnvVars = fs.readFileSync(fallbackEnvPath, 'utf8');
         const keyMatch = existingEnvVars.match(/^APP_KEY=(.*)$/m);
-        if (keyMatch && keyMatch[1]) {
-            appKey = keyMatch[1];
+        if (keyMatch && keyMatch[1] && keyMatch[1].trim()) {
+            appKey = keyMatch[1].trim();
         }
     }
     
@@ -134,7 +142,6 @@ function setupProductionEnv(port) {
     }
 
     // Write .env to the app directory (extraResources is writable in win-unpacked/installed)
-    const envPath = path.join(rootPath, '.env');
     const envContent = [
         'APP_NAME=Lupon',
         'APP_ENV=production',
@@ -144,6 +151,7 @@ function setupProductionEnv(port) {
         'DB_CONNECTION=sqlite',
         `DB_DATABASE=${dbPath.replace(/\\/g, '/')}`,
         'SESSION_DRIVER=file',
+        'SESSION_LIFETIME=1440',
         `SESSION_FILES=${storagePath.replace(/\\/g, '/')}/framework/sessions`,
         'CACHE_STORE=file',
         `CACHE_STORE_PATH=${storagePath.replace(/\\/g, '/')}/framework/cache/data`,
@@ -208,6 +216,7 @@ function startLaravel(port, appKey) {
             windowsHide: true,
             env: {
                 ...process.env,
+                PHP_CLI_SERVER_WORKERS: '4',
                 APP_ENV: isDev ? 'local' : 'production',
                 APP_DEBUG: isDev ? 'true' : 'false',
                 DB_DATABASE: dbPath,

@@ -262,6 +262,18 @@
             });
         })();
 
+        // Auto-recover from expired sessions (HTTP 419) without locking up the UI
+        document.addEventListener('livewire:init', () => {
+            Livewire.hook('request', ({ fail }) => {
+                fail(({ status, preventDefault }) => {
+                    if (status === 419) {
+                        preventDefault();
+                        window.location.reload();
+                    }
+                });
+            });
+        });
+
         // Global Livewire toast handler
         document.addEventListener('livewire:initialized', () => {
             Livewire.on('toast', ({ type, message }) => {

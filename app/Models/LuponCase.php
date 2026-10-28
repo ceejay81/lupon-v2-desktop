@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Cache;
 
 class LuponCase extends Model
 {
@@ -18,6 +19,16 @@ class LuponCase extends Model
             if ($case->isDirty('status') && $case->status === 'settled' && is_null($case->settled_at)) {
                 $case->settled_at = now();
             }
+        });
+
+        static::saved(function () {
+            Cache::forget('dashboard_stats');
+            Cache::forget('case_status_counts');
+        });
+
+        static::deleted(function () {
+            Cache::forget('dashboard_stats');
+            Cache::forget('case_status_counts');
         });
     }
 
